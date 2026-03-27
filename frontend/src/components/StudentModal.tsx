@@ -29,6 +29,8 @@ const StudentModal: React.FC<StudentModalProps> = ({ student, onClose, onSave })
     state: '',
     district: '',
     pincode: '',
+    image: '',
+    certificate: '',
   });
 
   const [availableDistricts, setAvailableDistricts] = useState<string[]>([]);
@@ -42,6 +44,8 @@ const StudentModal: React.FC<StudentModalProps> = ({ student, onClose, onSave })
         state: student.state,
         district: student.district,
         pincode: student.pincode,
+        image: student.image || '',
+        certificate: student.certificate || '',
       });
     }
   }, [student]);
@@ -64,6 +68,17 @@ const StudentModal: React.FC<StudentModalProps> = ({ student, onClose, onSave })
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, field: 'image' | 'certificate') => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData(prev => ({ ...prev, [field]: reader.result as string }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -74,64 +89,64 @@ const StudentModal: React.FC<StudentModalProps> = ({ student, onClose, onSave })
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/30 dark:bg-slate-950/60 backdrop-blur-md animate-in fade-in duration-200">
       <div 
-        className="bg-white rounded-[24px] shadow-2xl w-full max-w-[560px] overflow-hidden animate-in fade-in zoom-in-95 duration-300 border border-slate-200/60 flex flex-col"
+        className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl rounded-[24px] shadow-[0_24px_60px_rgb(0,0,0,0.12)] dark:shadow-[0_24px_60px_rgb(0,0,0,0.4)] w-full max-w-[560px] max-h-[90vh] overflow-hidden animate-in fade-in zoom-in-95 duration-300 border border-white/80 dark:border-slate-700/80 flex flex-col relative transition-colors duration-500"
       >
-        <div className="px-8 py-6 border-b border-slate-100 flex justify-between items-start bg-slate-50/30">
+        <div className="px-6 py-4 border-b border-slate-100/80 dark:border-slate-700/50 flex justify-between items-start bg-gradient-to-r from-blue-50/30 dark:from-slate-800/80 to-transparent relative overflow-hidden flex-shrink-0">
           <div>
-            <h2 className="text-xl font-extrabold text-slate-900 tracking-tight">
+            <h2 className="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">
               {student ? 'Edit Record' : 'Register Student'}
             </h2>
-            <p className="text-sm font-medium text-slate-500 mt-1">
+            <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">
               {student ? 'Update the details for this student below.' : 'Enter the official details to enrol a new student.'}
             </p>
           </div>
           <button 
             type="button"
             onClick={onClose} 
-            className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-colors"
+            className="p-2 text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors"
           >
             <X size={20} strokeWidth={2.5} />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-8 space-y-6 flex-1">
+        <form onSubmit={handleSubmit} className="p-6 space-y-4 flex-1 overflow-y-auto custom-scrollbar">
           <div>
-            <label className="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wider">Legal Full Name</label>
+            <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Legal Full Name</label>
             <input
               required
               type="text"
               name="name"
               value={formData.name}
               onChange={handleChange}
-              className="w-full px-4 py-3 rounded-xl border border-slate-200/80 outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all text-sm font-semibold text-slate-900 placeholder-slate-400 bg-slate-50 focus:bg-white shadow-sm"
+              className="w-full px-4 py-2 rounded-xl border border-slate-200/60 dark:border-slate-700/60 outline-none focus:border-blue-400 dark:focus:border-indigo-500 focus:ring-4 focus:ring-blue-500/15 dark:focus:ring-indigo-500/20 transition-all text-sm font-semibold text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 bg-slate-50/50 dark:bg-slate-800/50 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] dark:shadow-none focus:bg-white dark:focus:bg-slate-800 focus:shadow-sm"
               placeholder="e.g. John Doe"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wider">Permanent Address</label>
+            <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Permanent Address</label>
             <textarea
               required
               name="address"
               value={formData.address}
               onChange={handleChange}
               rows={2}
-              className="w-full px-4 py-3 rounded-xl border border-slate-200/80 outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all resize-none text-sm font-semibold text-slate-900 placeholder-slate-400 bg-slate-50 focus:bg-white shadow-sm"
+              className="w-full px-4 py-2 rounded-xl border border-slate-200/60 dark:border-slate-700/60 outline-none focus:border-blue-400 dark:focus:border-indigo-500 focus:ring-4 focus:ring-blue-500/15 dark:focus:ring-indigo-500/20 transition-all resize-none text-sm font-semibold text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 bg-slate-50/50 dark:bg-slate-800/50 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] dark:shadow-none focus:bg-white dark:focus:bg-slate-800 focus:shadow-sm"
               placeholder="Apartment, Street, Area"
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-5">
+          <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wider">State Region</label>
+              <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">State Region</label>
               <select
                 required
                 name="state"
                 value={formData.state}
                 onChange={handleChange}
-                className="w-full px-4 py-3 rounded-xl border border-slate-200/80 outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all bg-slate-50 focus:bg-white text-sm font-semibold text-slate-900 appearance-none cursor-pointer shadow-sm"
+                className="w-full px-4 py-2 rounded-xl border border-slate-200/60 dark:border-slate-700/60 outline-none focus:border-blue-400 dark:focus:border-indigo-500 focus:ring-4 focus:ring-blue-500/15 dark:focus:ring-indigo-500/20 transition-all bg-slate-50/50 dark:bg-slate-800/50 text-slate-900 dark:text-slate-100 appearance-none cursor-pointer shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] dark:shadow-none focus:bg-white dark:focus:bg-slate-800 focus:shadow-sm text-sm font-semibold"
               >
                 <option value="" disabled>Select state</option>
                 {MOCK_LOCATIONS.map(loc => (
@@ -140,14 +155,14 @@ const StudentModal: React.FC<StudentModalProps> = ({ student, onClose, onSave })
               </select>
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wider">Local District</label>
+              <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Local District</label>
               <select
                 required
                 name="district"
                 value={formData.district}
                 onChange={handleChange}
                 disabled={!formData.state}
-                className="w-full px-4 py-3 rounded-xl border border-slate-200/80 outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all bg-slate-50 focus:bg-white disabled:bg-slate-100 disabled:text-slate-400 disabled:shadow-none disabled:cursor-not-allowed text-sm font-semibold text-slate-900 appearance-none cursor-pointer shadow-sm"
+                className="w-full px-4 py-2 rounded-xl border border-slate-200/60 dark:border-slate-700/60 outline-none focus:border-blue-400 dark:focus:border-indigo-500 focus:ring-4 focus:ring-blue-500/15 dark:focus:ring-indigo-500/20 transition-all bg-slate-50/50 dark:bg-slate-800/50 text-slate-900 dark:text-slate-100 disabled:bg-slate-100/50 dark:disabled:bg-slate-800/20 disabled:text-slate-400 dark:disabled:text-slate-600 disabled:shadow-none disabled:cursor-not-allowed appearance-none cursor-pointer shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] dark:shadow-none focus:bg-white dark:focus:bg-slate-800 focus:shadow-sm text-sm font-semibold"
               >
                 <option value="" disabled>Select district</option>
                 {availableDistricts.map(dist => (
@@ -157,8 +172,31 @@ const StudentModal: React.FC<StudentModalProps> = ({ student, onClose, onSave })
             </div>
           </div>
 
+          <div className="grid grid-cols-2 gap-4 mb-3">
+            <div>
+              <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Student Image</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => handleFileChange(e, 'image')}
+                className="w-full px-3 py-1.5 rounded-xl border border-slate-200/60 dark:border-slate-700/60 text-sm bg-slate-50/50 dark:bg-slate-800/50 dark:text-slate-300 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] dark:shadow-none focus:bg-white dark:focus:bg-slate-800 file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-50 dark:file:bg-indigo-500/20 file:text-blue-700 dark:file:text-indigo-300 hover:file:bg-blue-100 dark:hover:file:bg-indigo-500/30 transition-all cursor-pointer outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20"
+              />
+              {formData.image && <img src={formData.image} alt="Preview" className="mt-2 h-12 w-12 object-cover rounded-full border border-slate-200 dark:border-slate-700 shadow-sm" />}
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Certificate (Optional)</label>
+              <input
+                type="file"
+                accept="image/*,.pdf"
+                onChange={(e) => handleFileChange(e, 'certificate')}
+                className="w-full px-3 py-1.5 rounded-xl border border-slate-200/60 dark:border-slate-700/60 text-sm bg-slate-50/50 dark:bg-slate-800/50 dark:text-slate-300 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] dark:shadow-none focus:bg-white dark:focus:bg-slate-800 file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-50 dark:file:bg-indigo-500/20 file:text-blue-700 dark:file:text-indigo-300 hover:file:bg-blue-100 dark:hover:file:bg-indigo-500/30 transition-all cursor-pointer outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20"
+              />
+              {formData.certificate && <div className="mt-2 text-[10px] text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 px-2 py-1 rounded-md border border-emerald-100 dark:border-emerald-500/20 font-semibold inline-flex items-center gap-1"><Check size={12} />Attached</div>}
+            </div>
+          </div>
+
           <div>
-            <label className="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wider">Postal Number / Pincode</label>
+            <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Postal Number / Pincode</label>
             <input
               required
               type="text"
@@ -167,25 +205,25 @@ const StudentModal: React.FC<StudentModalProps> = ({ student, onClose, onSave })
               title="5 or 6 digit postal code"
               value={formData.pincode}
               onChange={handleChange}
-              className="w-full px-4 py-3 rounded-xl border border-slate-200/80 outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all font-mono text-sm tracking-widest text-slate-900 placeholder-slate-400 bg-slate-50 focus:bg-white shadow-sm"
+              className="w-full px-4 py-2 rounded-xl border border-slate-200/60 dark:border-slate-700/60 outline-none focus:border-blue-400 dark:focus:border-indigo-500 focus:ring-4 focus:ring-blue-500/15 dark:focus:ring-indigo-500/20 transition-all font-mono text-sm tracking-widest text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 bg-slate-50/50 dark:bg-slate-800/50 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] dark:shadow-none focus:bg-white dark:focus:bg-slate-800 focus:shadow-sm"
               placeholder="110001"
               maxLength={6}
             />
           </div>
 
-          <div className="pt-6 flex justify-end gap-3 mt-4 border-t border-slate-100">
+          <div className="pt-4 flex justify-end gap-3 border-t border-slate-100 dark:border-slate-700/50 flex-shrink-0">
             <button
               type="button"
               onClick={onClose}
               disabled={isSubmitting}
-              className="px-6 py-3 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors disabled:opacity-50"
+              className="px-5 py-2.5 rounded-xl text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100/80 dark:hover:bg-slate-800/80 hover:shadow-sm transition-all disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-6 py-3 rounded-xl text-sm font-bold text-white flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 shadow-md shadow-indigo-500/20 transition-all disabled:opacity-50 active:scale-95 border border-indigo-600"
+              className="px-5 py-2.5 rounded-xl text-sm font-bold text-white flex items-center gap-2 bg-gradient-to-b from-blue-500 to-blue-600 dark:from-indigo-600 dark:to-indigo-700 hover:from-blue-600 hover:to-blue-700 dark:hover:from-indigo-500 dark:hover:to-indigo-600 shadow-[0_4px_14px_0_rgb(59,130,246,0.39)] dark:shadow-none hover:shadow-[0_6px_20px_rgba(59,130,246,0.23)] border border-blue-400/50 dark:border-indigo-500/50 transition-all disabled:opacity-50 active:scale-95"
             >
               <Check size={18} strokeWidth={2.5} />
               {isSubmitting ? 'Processing...' : (student ? 'Save Changes' : 'Confirm Registration')}

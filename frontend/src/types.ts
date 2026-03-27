@@ -5,4 +5,6 @@ export interface Student {
   state: string;
   district: string;
   pincode: string;
+  image?: string;
+  certificate?: string;
 }
