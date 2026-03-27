@@ -1,24 +1,25 @@
 import React from 'react';
-import { Edit2, Trash2, Users, Printer, FileText } from 'lucide-react';
+import { Edit2, Trash2, Users, Printer, FileText, Eye } from 'lucide-react';
 import type { Student } from '../types';
 
 interface StudentListProps {
   students: Student[];
   onEdit: (student: Student) => void;
   onDelete: (id: number) => void;
+  onView: (student: Student) => void;
 }
 
-const StudentList: React.FC<StudentListProps> = ({ students, onEdit, onDelete }) => {
+const StudentList: React.FC<StudentListProps> = ({ students, onEdit, onDelete, onView }) => {
   if (students.length === 0) {
     return (
-      <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl border border-white/80 dark:border-slate-700/50 rounded-2xl p-16 text-center shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-colors duration-500">
-        <div className="flex justify-center mb-4">
-          <div className="p-4 bg-slate-50 rounded-full border border-slate-100 text-slate-400">
-            <Users size={32} strokeWidth={1.5} />
+      <div className="glass-panel rounded-3xl p-16 text-center transition-all duration-500 hover:shadow-[0_12px_40px_rgba(31,38,135,0.1)]">
+        <div className="flex justify-center mb-6">
+          <div className="p-5 bg-indigo-50/50 dark:bg-slate-800 rounded-full border border-indigo-100 dark:border-slate-700 text-indigo-400 dark:text-indigo-500 shadow-inner">
+            <Users size={36} strokeWidth={1.5} />
           </div>
         </div>
-        <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">No students found</h3>
-        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-sm mx-auto">There are no student records right now. Click the "Register New Student" button to create an entry.</p>
+        <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-2 tracking-tight">No students enrolled yet</h3>
+        <p className="text-sm font-medium text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed">Your database is currently empty. Click the "Register New" button above to onboard a student.</p>
       </div>
     );
   }
@@ -102,62 +103,71 @@ const StudentList: React.FC<StudentListProps> = ({ students, onEdit, onDelete })
   };
 
   return (
-    <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl border border-white/80 dark:border-slate-700/50 rounded-2xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-colors duration-500">
+    <div className="glass-panel rounded-3xl overflow-hidden transition-all duration-500 hover:shadow-[0_12px_40px_rgba(31,38,135,0.08)]">
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse whitespace-nowrap">
           <thead>
-            <tr className="bg-gradient-to-r from-blue-50/50 dark:from-slate-800/80 to-transparent border-b border-blue-100/50 dark:border-slate-700/50">
-              <th className="py-4 px-6 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider w-16">Profile</th>
-              <th className="py-4 px-6 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Student Info</th>
-              <th className="py-4 px-6 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Address Details</th>
-              <th className="py-4 px-6 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-center">Location</th>
-              <th className="py-4 px-6 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-center">Pincode</th>
-              <th className="py-4 px-6 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-right">Actions</th>
+            <tr className="bg-gradient-to-r from-indigo-500/5 via-transparent to-transparent border-b border-indigo-500/10 dark:border-slate-800">
+              <th className="py-5 px-6 text-[11px] font-black text-indigo-500 dark:text-indigo-400 uppercase tracking-[0.2em] w-16">Profile</th>
+              <th className="py-5 px-6 text-[11px] font-black text-slate-900 dark:text-white uppercase tracking-[0.2em]">Student Info</th>
+              <th className="py-5 px-6 text-[11px] font-black text-slate-900 dark:text-white uppercase tracking-[0.2em]">Address Details</th>
+              <th className="py-5 px-6 text-[11px] font-black text-slate-900 dark:text-white uppercase tracking-[0.2em] text-center">Location</th>
+              <th className="py-5 px-6 text-[11px] font-black text-slate-900 dark:text-white uppercase tracking-[0.2em] text-center">Pincode</th>
+              <th className="py-5 px-6 text-[11px] font-black text-slate-900 dark:text-white uppercase tracking-[0.2em] text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100/60 dark:divide-slate-700/50">
             {students.map((student) => (
-              <tr key={student.id} className="hover:bg-blue-50/40 dark:hover:bg-slate-700/40 hover:scale-[1.002] transition-all duration-300 ease-out group">
+              <tr key={student.id} className="hover:bg-indigo-50/30 dark:hover:bg-slate-700/40 hover:-translate-y-[1px] transition-all duration-300 ease-out group">
                 <td className="py-4 px-6">
                   {student.image ? (
-                    <img src={student.image} alt={student.name} className="w-11 h-11 rounded-full object-cover border-2 border-slate-200 shadow-sm" />
+                    <img src={student.image} alt={student.name} className="w-12 h-12 rounded-2xl object-cover border-2 border-white/50 dark:border-slate-600 shadow-md transform group-hover:scale-105 transition-transform duration-300" />
                   ) : (
-                    <div className="w-11 h-11 rounded-full bg-gradient-to-br from-indigo-100 to-indigo-50 flex items-center justify-center text-indigo-700 font-bold border-2 border-indigo-200 shadow-sm text-lg">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-100 to-violet-50 dark:from-slate-700 dark:to-slate-600 flex items-center justify-center text-indigo-700 dark:text-indigo-300 font-bold border-2 border-white/50 dark:border-slate-600 shadow-md text-lg transform group-hover:scale-105 transition-transform duration-300">
                       {student.name.charAt(0).toUpperCase()}
                     </div>
                   )}
                 </td>
                 <td className="py-4 px-6">
-                  <div className="flex flex-col gap-0.5">
+                  <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-bold text-slate-900 group-hover:text-blue-700 dark:text-slate-200 dark:group-hover:text-indigo-400 transition-colors">{student.name}</span>
+                      <button onClick={() => onView(student)} className="text-sm font-extrabold text-slate-800 group-hover:text-indigo-600 dark:text-slate-200 dark:group-hover:text-indigo-400 transition-colors text-left tracking-tight">
+                        {student.name}
+                      </button>
                       {student.certificate && (
-                        <span title="Certificate Uploaded"><FileText size={14} className="text-emerald-500 dark:text-emerald-400" /></span>
+                        <span title="Certificate Uploaded"><FileText size={14} className="text-violet-500 dark:text-violet-400 drop-shadow-sm" /></span>
                       )}
                     </div>
-                    <span className="text-[11px] text-slate-400 dark:text-slate-500 font-semibold tracking-wider">UID: STU-100{student.id}</span>
+                    <span className="text-[11px] text-indigo-400/80 dark:text-indigo-500/80 font-bold tracking-widest uppercase">STU-{1000 + student.id}</span>
                   </div>
                 </td>
                 <td className="py-4 px-6">
-                  <span className="text-sm text-slate-600 dark:text-slate-400 block max-w-[200px] truncate" title={student.address}>
+                  <span className="text-sm font-medium text-slate-600 dark:text-slate-400 block max-w-[220px] truncate" title={student.address}>
                     {student.address}
                   </span>
                 </td>
                 <td className="py-4 px-6 text-center">
-                  <div className="flex flex-col items-center justify-center gap-1.5">
-                    <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-bold tracking-wide bg-gradient-to-b from-blue-50 to-blue-100/50 dark:from-slate-700 dark:to-slate-700/50 text-blue-700 dark:text-indigo-300 border border-blue-200/60 dark:border-slate-600/50 shadow-sm">
+                  <div className="flex flex-col items-center justify-center gap-2">
+                    <span className="inline-flex items-center px-3 py-1 rounded-lg text-[11px] font-bold tracking-widest uppercase bg-gradient-to-b from-indigo-50 to-indigo-100/60 dark:from-slate-700 dark:to-slate-700/80 text-indigo-700 dark:text-indigo-300 border border-indigo-200/50 dark:border-slate-600 shadow-sm">
                       {student.state}
                     </span>
-                    <span className="text-xs font-medium text-slate-500 dark:text-slate-400">{student.district}</span>
+                    <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">{student.district}</span>
                   </div>
                 </td>
                 <td className="py-4 px-6 text-center">
-                  <span className="inline-block text-sm font-mono text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] dark:shadow-none px-2.5 py-1.5 rounded-lg border border-slate-200/60 dark:border-slate-700/50">
+                  <span className="inline-block text-sm font-mono tracking-widest font-bold text-slate-600 dark:text-slate-300 bg-white/60 dark:bg-slate-800 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] dark:shadow-none px-3 py-1.5 rounded-lg border border-slate-200/80 dark:border-slate-700/80">
                     {student.pincode}
                   </span>
                 </td>
                 <td className="py-4 px-6 text-right">
                   <div className="flex justify-end gap-1.5">
+                    <button
+                      title="View Profile Dashboard"
+                      onClick={() => onView(student)}
+                      className="p-2.5 text-slate-400 dark:text-slate-500 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/20 hover:shadow-sm rounded-xl transition-all"
+                    >
+                      <Eye size={16} strokeWidth={2.5} />
+                    </button>
                     <button
                       title="Print Details"
                       onClick={() => handlePrint(student)}

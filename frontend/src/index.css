@@ -1,15 +1,71 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
 
 @custom-variant dark (&:is(.dark *));
 
+@theme {
+  --font-sans: 'Outfit', ui-sans-serif, system-ui, sans-serif;
+  --color-brand-50: #f0f4ff;
+  --color-brand-100: #e0e7ff;
+  --color-brand-200: #c7d2fe;
+  --color-brand-300: #a5b4fc;
+  --color-brand-400: #818cf8;
+  --color-brand-500: #6366f1;
+  --color-brand-600: #4f46e5;
+  --color-brand-700: #4338ca;
+  --color-brand-800: #3730a3;
+  --color-brand-900: #312e81;
+  
+  /* Luxury Accents */
+  --color-accent-blue: #00d2ff;
+  --color-accent-purple: #9d50bb;
+  --color-accent-rose: #ff4b2b;
+}
+
 body {
-  background-color: #f8fafc;
+  background-color: #fdfdff;
   color: #0f172a;
+  font-family: 'Outfit', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+.dark body {
+  background-color: #0a0c10;
+}
+
+/* Glassmorphism utilities - Refined for "Advanced Premium" feel */
+.glass-panel {
+  @apply bg-white/60 dark:bg-[#0f172a]/70 backdrop-blur-2xl border border-white dark:border-slate-800/40 shadow-[0_20px_50px_rgba(8,_112,_184,_0.05)];
+}
+
+.glass-button {
+  @apply relative overflow-hidden bg-white/40 dark:bg-slate-800/40 backdrop-blur-md border border-white/80 dark:border-slate-700/50 shadow-sm transition-all duration-500 hover:bg-white/60 dark:hover:bg-slate-700/60;
+}
+
+.glass-button:hover {
+  @apply shadow-[0_10px_30px_rgba(99,102,241,0.15)] -translate-y-[2px];
+}
+
+/* Vibrant 3D Premium Button */
+.btn-premium {
+  @apply relative z-0 overflow-hidden bg-gradient-to-r from-[#4f46e5] to-[#7c3aed] text-white font-bold transition-all duration-500 shadow-[0_10px_25px_-5px_rgba(99,102,241,0.5)] hover:shadow-[0_15px_35px_-5px_rgba(99,102,241,0.6)] hover:scale-[1.02] active:scale-[0.98] border-0;
+}
+
+.btn-premium::before {
+  content: '';
+  @apply absolute inset-0 -z-10 bg-gradient-to-r from-[#00d2ff] to-[#3a7bd5] opacity-0 transition-opacity duration-500;
+}
+
+.btn-premium:hover::before {
+  @apply opacity-100;
+}
+
+/* Sophisticated Input styling */
+.input-premium {
+  @apply bg-[#f8faff] dark:bg-slate-900/80 border border-slate-200/60 dark:border-slate-800/80 focus:bg-white dark:focus:bg-slate-800 focus:border-indigo-400 dark:focus:border-indigo-500 focus:ring-[6px] focus:ring-indigo-500/10 dark:focus:ring-indigo-500/15 shadow-[inset_0_2px_10px_rgba(0,0,0,0.02)] transition-all duration-300 outline-none;
+}
+
 ::selection {
-  background-color: #dbeafe;
-  color: #1e3a8a;
+  @apply bg-indigo-500/20 text-indigo-900 dark:text-indigo-200;
 }

@@ -1,30 +1,29 @@
-import React, { useState, useEffect } from 'react';
-import { X, Check } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { X, Camera, Upload } from 'lucide-react';
 import type { Student } from '../types';
 
-interface LocationData {
-  state: string;
-  districts: string[];
-}
-
-const MOCK_LOCATIONS: LocationData[] = [
-  { state: 'Maharashtra', districts: ['Mumbai', 'Pune', 'Nagpur', 'Thane', 'Nashik'] },
-  { state: 'Karnataka', districts: ['Bengaluru', 'Mysuru', 'Mangaluru', 'Hubli', 'Belgaum'] },
-  { state: 'Andhra Pradesh', districts: ['Visakhapatnam', 'Vijayawada', 'Guntur', 'Nellore'] },
-  { state: 'Delhi', districts: ['New Delhi', 'North Delhi', 'South Delhi', 'East Delhi'] },
-  { state: 'Tamil Nadu', districts: ['Chennai', 'Coimbatore', 'Madurai', 'Salem'] },
-  { state: 'Kerala', districts: ['Thiruvananthapuram', 'Kochi', 'Kozhikode', 'Thrissur'] }
-];
+import { LOCATIONS } from '../data/locations';
 
 interface StudentModalProps {
   student: Student | null;
   onClose: () => void;
-  onSave: (data: Omit<Student, 'id'> | Student) => void;
+  onSave: (data: any) => void;
 }
 
 const StudentModal: React.FC<StudentModalProps> = ({ student, onClose, onSave }) => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<any>({
     name: '',
+    email: '',
+    phone: '',
+    dob: '',
+    age: '',
+    gender: '',
+    father_name: '',
+    mother_name: '',
+    blood_group: '',
+    medical_status: '',
+    emergency_contact: '',
+    country: 'India', // default country
     address: '',
     state: '',
     district: '',
@@ -33,36 +32,64 @@ const StudentModal: React.FC<StudentModalProps> = ({ student, onClose, onSave })
     certificate: '',
   });
 
+  const [imagePreview, setImagePreview] = useState<string>('');
+  const [availableStates, setAvailableStates] = useState<string[]>([]);
   const [availableDistricts, setAvailableDistricts] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const certInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (student) {
       setFormData({
-        name: student.name,
-        address: student.address,
-        state: student.state,
-        district: student.district,
-        pincode: student.pincode,
+        name: student.name || '',
+        email: student.email || '',
+        phone: student.phone || '',
+        dob: student.dob ? student.dob.split('T')[0] : '', // format date if needed
+        age: student.age || '',
+        gender: student.gender || '',
+        father_name: student.father_name || '',
+        mother_name: student.mother_name || '',
+        blood_group: student.blood_group || '',
+        medical_status: student.medical_status || '',
+        emergency_contact: student.emergency_contact || '',
+        country: student.country || 'India',
+        address: student.address || '',
+        state: student.state || '',
+        district: student.district || '',
+        pincode: student.pincode || '',
         image: student.image || '',
         certificate: student.certificate || '',
       });
+      setImagePreview(student.image || '');
     }
   }, [student]);
 
   useEffect(() => {
-    if (formData.state) {
-      const loc = MOCK_LOCATIONS.find(l => l.state === formData.state);
-      if (loc) {
-        setAvailableDistricts(loc.districts);
-        if (!loc.districts.includes(formData.district)) {
-          setFormData(prev => ({ ...prev, district: '' }));
-        }
-      } else {
-        setAvailableDistricts([]);
+    if (formData.country) {
+      const states = Object.keys(LOCATIONS[formData.country] || {});
+      setAvailableStates(states);
+      // Reset state and district if the selection is invalid
+      if (!states.includes(formData.state)) {
+        setFormData((prev: any) => ({ ...prev, state: '', district: '' }));
       }
+    } else {
+      setAvailableStates([]);
     }
-  }, [formData.state]);
+  }, [formData.country]);
+
+  useEffect(() => {
+    if (formData.country && formData.state) {
+      const districts = LOCATIONS[formData.country]?.[formData.state] || [];
+      setAvailableDistricts(districts);
+      // Reset district if it's not in the new list
+      if (!districts.includes(formData.district)) {
+        setFormData((prev: any) => ({ ...prev, district: '' }));
+      }
+    } else {
+      setAvailableDistricts([]);
+    }
+  }, [formData.country, formData.state]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -71,11 +98,14 @@ const StudentModal: React.FC<StudentModalProps> = ({ student, onClose, onSave })
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, field: 'image' | 'certificate') => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData(prev => ({ ...prev, [field]: reader.result as string }));
-      };
-      reader.readAsDataURL(file);
+      setFormData({ ...formData, [field]: file });
+      if (field === 'image') {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setImagePreview(reader.result as string);
+        };
+        reader.readAsDataURL(file);
+      }
     }
   };
 
@@ -89,145 +119,338 @@ const StudentModal: React.FC<StudentModalProps> = ({ student, onClose, onSave })
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/30 dark:bg-slate-950/60 backdrop-blur-md animate-in fade-in duration-200">
-      <div 
-        className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl rounded-[24px] shadow-[0_24px_60px_rgb(0,0,0,0.12)] dark:shadow-[0_24px_60px_rgb(0,0,0,0.4)] w-full max-w-[560px] max-h-[90vh] overflow-hidden animate-in fade-in zoom-in-95 duration-300 border border-white/80 dark:border-slate-700/80 flex flex-col relative transition-colors duration-500"
-      >
-        <div className="px-6 py-4 border-b border-slate-100/80 dark:border-slate-700/50 flex justify-between items-start bg-gradient-to-r from-blue-50/30 dark:from-slate-800/80 to-transparent relative overflow-hidden flex-shrink-0">
-          <div>
-            <h2 className="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-              {student ? 'Edit Record' : 'Register Student'}
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-200 overflow-y-auto">
+      <div className="bg-white dark:bg-[#0f172a] rounded-[24px] shadow-2xl w-full max-w-[700px] my-auto relative animate-in zoom-in-95 duration-300 flex flex-col border border-slate-200 dark:border-slate-800">
+        
+        {/* Close Button Top Right */}
+        <button 
+          type="button"
+          onClick={onClose} 
+          className="absolute top-6 right-6 p-2 text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors z-10"
+        >
+          <X size={24} strokeWidth={2} />
+        </button>
+
+        <form onSubmit={handleSubmit} className="p-8 sm:p-12 flex flex-col items-center">
+          
+          {/* Header section identical to reference */}
+          <div className="w-full mb-10 text-left sm:text-center mt-2">
+            <h2 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight mb-3 bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-violet-600 dark:from-white dark:to-indigo-300">
+              Student Registration
             </h2>
-            <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">
-              {student ? 'Update the details for this student below.' : 'Enter the official details to enrol a new student.'}
+            <p className="text-[15px] font-medium text-slate-500 dark:text-slate-400">
+              Complete the registration by providing the details below.
             </p>
           </div>
-          <button 
-            type="button"
-            onClick={onClose} 
-            className="p-2 text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors"
-          >
-            <X size={20} strokeWidth={2.5} />
-          </button>
-        </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4 flex-1 overflow-y-auto custom-scrollbar">
-          <div>
-            <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Legal Full Name</label>
-            <input
-              required
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              className="w-full px-4 py-2 rounded-xl border border-slate-200/60 dark:border-slate-700/60 outline-none focus:border-blue-400 dark:focus:border-indigo-500 focus:ring-4 focus:ring-blue-500/15 dark:focus:ring-indigo-500/20 transition-all text-sm font-semibold text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 bg-slate-50/50 dark:bg-slate-800/50 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] dark:shadow-none focus:bg-white dark:focus:bg-slate-800 focus:shadow-sm"
-              placeholder="e.g. John Doe"
+          {/* Centered Photo Upload */}
+          <div className="flex flex-col items-center mb-10">
+            <div className="w-32 h-32 rounded-full bg-slate-100 dark:bg-slate-800 border-[3px] border-slate-50 dark:border-slate-700 flex items-center justify-center overflow-hidden mb-4 shadow-sm relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+              {imagePreview ? (
+                <img src={imagePreview} alt="Profile" className="w-full h-full object-cover" />
+              ) : (
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-slate-400 dark:text-slate-500">
+                  <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              )}
+              <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                 <Camera className="text-white" size={24} />
+              </div>
+            </div>
+            
+            <h3 className="text-[15px] font-bold text-slate-900 dark:text-white mb-1">Profile Photo</h3>
+            <p className="text-xs text-slate-400 dark:text-slate-500 max-w-[240px] text-center mb-4 leading-relaxed">
+              Upload a clear photo of the student for identification purposes
+            </p>
+            
+            <input 
+              type="file" 
+              accept="image/*" 
+              ref={fileInputRef}
+              onChange={(e) => handleFileChange(e, 'image')}
+              className="hidden" 
             />
-          </div>
-
-          <div>
-            <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Permanent Address</label>
-            <textarea
-              required
-              name="address"
-              value={formData.address}
-              onChange={handleChange}
-              rows={2}
-              className="w-full px-4 py-2 rounded-xl border border-slate-200/60 dark:border-slate-700/60 outline-none focus:border-blue-400 dark:focus:border-indigo-500 focus:ring-4 focus:ring-blue-500/15 dark:focus:ring-indigo-500/20 transition-all resize-none text-sm font-semibold text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 bg-slate-50/50 dark:bg-slate-800/50 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] dark:shadow-none focus:bg-white dark:focus:bg-slate-800 focus:shadow-sm"
-              placeholder="Apartment, Street, Area"
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">State Region</label>
-              <select
-                required
-                name="state"
-                value={formData.state}
-                onChange={handleChange}
-                className="w-full px-4 py-2 rounded-xl border border-slate-200/60 dark:border-slate-700/60 outline-none focus:border-blue-400 dark:focus:border-indigo-500 focus:ring-4 focus:ring-blue-500/15 dark:focus:ring-indigo-500/20 transition-all bg-slate-50/50 dark:bg-slate-800/50 text-slate-900 dark:text-slate-100 appearance-none cursor-pointer shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] dark:shadow-none focus:bg-white dark:focus:bg-slate-800 focus:shadow-sm text-sm font-semibold"
-              >
-                <option value="" disabled>Select state</option>
-                {MOCK_LOCATIONS.map(loc => (
-                  <option key={loc.state} value={loc.state}>{loc.state}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Local District</label>
-              <select
-                required
-                name="district"
-                value={formData.district}
-                onChange={handleChange}
-                disabled={!formData.state}
-                className="w-full px-4 py-2 rounded-xl border border-slate-200/60 dark:border-slate-700/60 outline-none focus:border-blue-400 dark:focus:border-indigo-500 focus:ring-4 focus:ring-blue-500/15 dark:focus:ring-indigo-500/20 transition-all bg-slate-50/50 dark:bg-slate-800/50 text-slate-900 dark:text-slate-100 disabled:bg-slate-100/50 dark:disabled:bg-slate-800/20 disabled:text-slate-400 dark:disabled:text-slate-600 disabled:shadow-none disabled:cursor-not-allowed appearance-none cursor-pointer shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] dark:shadow-none focus:bg-white dark:focus:bg-slate-800 focus:shadow-sm text-sm font-semibold"
-              >
-                <option value="" disabled>Select district</option>
-                {availableDistricts.map(dist => (
-                  <option key={dist} value={dist}>{dist}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4 mb-3">
-            <div>
-              <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Student Image</label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => handleFileChange(e, 'image')}
-                className="w-full px-3 py-1.5 rounded-xl border border-slate-200/60 dark:border-slate-700/60 text-sm bg-slate-50/50 dark:bg-slate-800/50 dark:text-slate-300 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] dark:shadow-none focus:bg-white dark:focus:bg-slate-800 file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-50 dark:file:bg-indigo-500/20 file:text-blue-700 dark:file:text-indigo-300 hover:file:bg-blue-100 dark:hover:file:bg-indigo-500/30 transition-all cursor-pointer outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20"
-              />
-              {formData.image && <img src={formData.image} alt="Preview" className="mt-2 h-12 w-12 object-cover rounded-full border border-slate-200 dark:border-slate-700 shadow-sm" />}
-            </div>
-            <div>
-              <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Certificate (Optional)</label>
-              <input
-                type="file"
-                accept="image/*,.pdf"
-                onChange={(e) => handleFileChange(e, 'certificate')}
-                className="w-full px-3 py-1.5 rounded-xl border border-slate-200/60 dark:border-slate-700/60 text-sm bg-slate-50/50 dark:bg-slate-800/50 dark:text-slate-300 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] dark:shadow-none focus:bg-white dark:focus:bg-slate-800 file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-50 dark:file:bg-indigo-500/20 file:text-blue-700 dark:file:text-indigo-300 hover:file:bg-blue-100 dark:hover:file:bg-indigo-500/30 transition-all cursor-pointer outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20"
-              />
-              {formData.certificate && <div className="mt-2 text-[10px] text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 px-2 py-1 rounded-md border border-emerald-100 dark:border-emerald-500/20 font-semibold inline-flex items-center gap-1"><Check size={12} />Attached</div>}
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Postal Number / Pincode</label>
-            <input
-              required
-              type="text"
-              name="pincode"
-              pattern="[0-9]{5,6}"
-              title="5 or 6 digit postal code"
-              value={formData.pincode}
-              onChange={handleChange}
-              className="w-full px-4 py-2 rounded-xl border border-slate-200/60 dark:border-slate-700/60 outline-none focus:border-blue-400 dark:focus:border-indigo-500 focus:ring-4 focus:ring-blue-500/15 dark:focus:ring-indigo-500/20 transition-all font-mono text-sm tracking-widest text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 bg-slate-50/50 dark:bg-slate-800/50 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] dark:shadow-none focus:bg-white dark:focus:bg-slate-800 focus:shadow-sm"
-              placeholder="110001"
-              maxLength={6}
-            />
-          </div>
-
-          <div className="pt-4 flex justify-end gap-3 border-t border-slate-100 dark:border-slate-700/50 flex-shrink-0">
+            
             <button
               type="button"
-              onClick={onClose}
-              disabled={isSubmitting}
-              className="px-5 py-2.5 rounded-xl text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100/80 dark:hover:bg-slate-800/80 hover:shadow-sm transition-all disabled:opacity-50"
+              onClick={() => fileInputRef.current?.click()}
+              className="flex items-center gap-2 px-6 py-2.5 rounded-xl border-2 border-indigo-500/20 text-indigo-600 dark:text-indigo-400 font-bold text-sm hover:bg-indigo-50 dark:hover:bg-indigo-500/10 hover:border-indigo-500/40 transition-all focus:outline-none"
             >
-              Cancel
+              <Camera size={18} />
+              Upload Photo
             </button>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="px-5 py-2.5 rounded-xl text-sm font-bold text-white flex items-center gap-2 bg-gradient-to-b from-blue-500 to-blue-600 dark:from-indigo-600 dark:to-indigo-700 hover:from-blue-600 hover:to-blue-700 dark:hover:from-indigo-500 dark:hover:to-indigo-600 shadow-[0_4px_14px_0_rgb(59,130,246,0.39)] dark:shadow-none hover:shadow-[0_6px_20px_rgba(59,130,246,0.23)] border border-blue-400/50 dark:border-indigo-500/50 transition-all disabled:opacity-50 active:scale-95"
-            >
-              <Check size={18} strokeWidth={2.5} />
-              {isSubmitting ? 'Processing...' : (student ? 'Save Changes' : 'Confirm Registration')}
-            </button>
+          </div>
+
+          <div className="w-full space-y-6">
+            <div className="border-t border-slate-100 dark:border-slate-800/80 mb-6 w-full absolute left-0"></div>
+
+            {/* Inputs Layout */}
+            <div className="w-full pt-4">
+              <label className="block text-[13px] font-bold text-slate-900 dark:text-slate-300 mb-2">Student Full Name</label>
+              <input
+                required
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                className="w-full px-5 py-4 rounded-2xl input-premium text-[15px] font-semibold text-slate-900 dark:text-slate-100 placeholder-slate-400"
+                placeholder="e.g., Jane Doe"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 w-full">
+              <div>
+                <input
+                  required
+                  type="date"
+                  name="dob"
+                  value={formData.dob}
+                  onChange={handleChange}
+                  className="w-full px-5 py-4 rounded-2xl input-premium text-[15px] font-semibold text-slate-900 dark:text-slate-100 placeholder-slate-400"
+                />
+              </div>
+              <div>
+                <label className="block text-[13px] font-bold text-slate-900 dark:text-slate-300 mb-2">Age</label>
+                <input
+                  required
+                  type="number"
+                  name="age"
+                  min="1"
+                  max="100"
+                  value={formData.age}
+                  onChange={handleChange}
+                  className="w-full px-5 py-4 rounded-2xl input-premium text-[15px] font-semibold text-slate-900 dark:text-slate-100 placeholder-slate-400"
+                  placeholder="e.g., 20"
+                />
+              </div>
+              <div>
+                <label className="block text-[13px] font-bold text-slate-900 dark:text-slate-300 mb-2">Gender</label>
+                <select
+                  required
+                  name="gender"
+                  value={formData.gender}
+                  onChange={handleChange}
+                  className="w-full px-5 py-4 rounded-2xl input-premium text-[15px] font-semibold text-slate-900 dark:text-slate-100 appearance-none cursor-pointer"
+                >
+                  <option value="" disabled>Select</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 w-full">
+              <div>
+                <label className="block text-[13px] font-bold text-slate-900 dark:text-slate-300 mb-2">Email ID</label>
+                <input
+                  required
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="w-full px-5 py-4 rounded-2xl input-premium text-[15px] font-semibold text-slate-900 dark:text-slate-100 placeholder-slate-400"
+                  placeholder="e.g., jane.doe@example.com"
+                />
+              </div>
+              <div>
+                <label className="block text-[13px] font-bold text-slate-900 dark:text-slate-300 mb-2">Contact Number</label>
+                <input
+                  required
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  className="w-full px-5 py-4 rounded-2xl input-premium text-[15px] font-semibold text-slate-900 dark:text-slate-100 placeholder-slate-400"
+                  placeholder="e.g., +1 123 456 7890"
+                />
+              </div>
+            </div>
+
+            <div className="w-full">
+              <label className="block text-[13px] font-bold text-slate-900 dark:text-slate-300 mb-2">Permanent Address</label>
+              <textarea
+                required
+                name="address"
+                value={formData.address}
+                onChange={handleChange}
+                rows={2}
+                className="w-full px-5 py-4 rounded-2xl input-premium resize-none text-[15px] font-semibold text-slate-900 dark:text-slate-100 placeholder-slate-400"
+                placeholder="Include apartment, street, and area"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 w-full">
+              <div>
+                <label className="block text-[13px] font-bold text-slate-900 dark:text-slate-300 mb-2">Blood Group</label>
+                <select
+                  name="blood_group"
+                  value={formData.blood_group}
+                  onChange={handleChange}
+                  className="w-full px-5 py-4 rounded-2xl input-premium text-[15px] font-semibold text-slate-900 dark:text-slate-100 appearance-none cursor-pointer"
+                >
+                  <option value="">Unknown</option>
+                  <option value="A+">A+</option>
+                  <option value="A-">A-</option>
+                  <option value="B+">B+</option>
+                  <option value="B-">B-</option>
+                  <option value="O+">O+</option>
+                  <option value="O-">O-</option>
+                  <option value="AB+">AB+</option>
+                  <option value="AB-">AB-</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-[13px] font-bold text-slate-900 dark:text-slate-300 mb-2">Medical Status</label>
+                <input
+                  type="text"
+                  name="medical_status"
+                  value={formData.medical_status}
+                  onChange={handleChange}
+                  className="w-full px-5 py-4 rounded-2xl input-premium text-[15px] font-semibold text-slate-900 dark:text-slate-100 placeholder-slate-400"
+                  placeholder="Health notes"
+                />
+              </div>
+              <div>
+                <label className="block text-[13px] font-bold text-slate-900 dark:text-slate-300 mb-2">Emergency Contact</label>
+                <input
+                  type="tel"
+                  name="emergency_contact"
+                  value={formData.emergency_contact}
+                  onChange={handleChange}
+                  className="w-full px-5 py-4 rounded-2xl input-premium text-[15px] font-semibold text-slate-900 dark:text-slate-100 placeholder-slate-400"
+                  placeholder="Contact number"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 w-full">
+              <div>
+                <label className="block text-[13px] font-bold text-slate-900 dark:text-slate-300 mb-2">Father's Name</label>
+                <input
+                  required
+                  type="text"
+                  name="father_name"
+                  value={formData.father_name}
+                  onChange={handleChange}
+                  className="w-full px-5 py-3.5 rounded-2xl bg-[#f4f5f8] dark:bg-slate-800/80 border-0 outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all text-[15px] font-medium text-slate-900 dark:text-slate-100 placeholder-slate-400"
+                  placeholder="Father's full name"
+                />
+              </div>
+              <div>
+                <label className="block text-[13px] font-bold text-slate-900 dark:text-slate-300 mb-2">Mother's Name</label>
+                <input
+                  required
+                  type="text"
+                  name="mother_name"
+                  value={formData.mother_name}
+                  onChange={handleChange}
+                  className="w-full px-5 py-3.5 rounded-2xl bg-[#f4f5f8] dark:bg-slate-800/80 border-0 outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all text-[15px] font-medium text-slate-900 dark:text-slate-100 placeholder-slate-400"
+                  placeholder="Mother's full name"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 w-full">
+              <div>
+                <label className="block text-[13px] font-bold text-slate-900 dark:text-slate-300 mb-2">Country</label>
+                <select
+                  required
+                  name="country"
+                  value={formData.country}
+                  onChange={handleChange}
+                  className="w-full px-5 py-3.5 rounded-2xl bg-[#f4f5f8] dark:bg-slate-800/80 border-0 outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all text-[15px] font-medium text-slate-900 dark:text-slate-100 appearance-none cursor-pointer"
+                >
+                  <option value="" disabled>Select country</option>
+                  {Object.keys(LOCATIONS).map(country => (
+                    <option key={country} value={country}>{country}</option>
+                  ))}
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-[13px] font-bold text-slate-900 dark:text-slate-300 mb-2">State Region</label>
+                <select
+                  required
+                  name="state"
+                  value={formData.state}
+                  onChange={handleChange}
+                  disabled={!formData.country || !availableStates.length}
+                  className="w-full px-5 py-3.5 rounded-2xl bg-[#f4f5f8] dark:bg-slate-800/80 border-0 outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all text-[15px] font-medium text-slate-900 dark:text-slate-100 appearance-none cursor-pointer disabled:opacity-50"
+                >
+                  <option value="" disabled>Select state</option>
+                  {availableStates.map(state => (
+                    <option key={state} value={state}>{state}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 w-full">
+              <div>
+                <label className="block text-[13px] font-bold text-slate-900 dark:text-slate-300 mb-2">Local District</label>
+                <select
+                  required
+                  name="district"
+                  value={formData.district}
+                  onChange={handleChange}
+                  disabled={!formData.state}
+                  className="w-full px-5 py-3.5 rounded-2xl bg-[#f4f5f8] dark:bg-slate-800/80 border-0 outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all text-[15px] font-medium text-slate-900 dark:text-slate-100 appearance-none cursor-pointer disabled:opacity-50"
+                >
+                  <option value="" disabled>Select district</option>
+                  {availableDistricts.map(dist => (
+                    <option key={dist} value={dist}>{dist}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-[13px] font-bold text-slate-900 dark:text-slate-300 mb-2">Pincode</label>
+                <input
+                  required
+                  type="text"
+                  name="pincode"
+                  pattern="[0-9]{5,6}"
+                  title="5 or 6 digit postal code"
+                  value={formData.pincode}
+                  onChange={handleChange}
+                  className="w-full px-5 py-3.5 rounded-2xl bg-[#f4f5f8] dark:bg-slate-800/80 border-0 outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all text-[15px] font-medium text-slate-900 dark:text-slate-100 placeholder-slate-400"
+                  placeholder="e.g., 110001"
+                  maxLength={6}
+                />
+              </div>
+
+              <div>
+                <label className="block text-[13px] font-bold text-slate-900 dark:text-slate-300 mb-2">Certificate</label>
+                <div 
+                  onClick={() => certInputRef.current?.click()}
+                  className="w-full px-5 py-3.5 rounded-2xl bg-[#f4f5f8] dark:bg-slate-800/80 border border-dashed border-slate-300 dark:border-slate-600 outline-none hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer transition-all flex items-center justify-between"
+                >
+                  <span className={`text-[15px] truncate font-medium ${formData.certificate ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400'}`}>
+                    {formData.certificate ? 'Selected' : 'Upload File'}
+                  </span>
+                  <Upload size={18} className="text-slate-400 flex-shrink-0 ml-2" />
+                </div>
+                <input 
+                  type="file" 
+                  accept="image/*,.pdf" 
+                  ref={certInputRef}
+                  onChange={(e) => handleFileChange(e, 'certificate')}
+                  className="hidden" 
+                />
+              </div>
+            </div>
+
+            <div className="pt-6 w-full">
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full py-5 rounded-[22px] text-[17px] btn-premium flex items-center justify-center gap-2 group"
+              >
+                {isSubmitting ? 'Processing...' : (student ? 'SAVE CHANGES' : 'CONFIRM REGISTRATION')}
+              </button>
+            </div>
           </div>
         </form>
       </div>
