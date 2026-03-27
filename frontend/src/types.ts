@@ -16,6 +16,10 @@ export interface Student {
   father_name?: string;
   mother_name?: string;
   blood_group?: string;
-  medical_status?: string;
-  emergency_contact?: string;
+  adhar_number?: string;
+  country_code?: string;
+  branch_id?: number;
+  course_id?: number;
+  branch_name?: string;
+  course_name?: string;
 }

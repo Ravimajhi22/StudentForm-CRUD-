@@ -1,10 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 @import "tailwindcss";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --font-sans: 'Outfit', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
   --color-brand-50: #f0f4ff;
   --color-brand-100: #e0e7ff;
   --color-brand-200: #c7d2fe;
@@ -23,49 +23,41 @@
 }
 
 body {
-  background-color: #fdfdff;
-  color: #0f172a;
-  font-family: 'Outfit', sans-serif;
+  background-color: #f8fbff;
+  color: #1e293b;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: -0.011em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 .dark body {
-  background-color: #0a0c10;
+  background-color: #0c111d;
 }
 
-/* Glassmorphism utilities - Refined for "Advanced Premium" feel */
+/* Chromatic Panels - White Mix with Blue & Yellow tints */
 .glass-panel {
-  @apply bg-white/60 dark:bg-[#0f172a]/70 backdrop-blur-2xl border border-white dark:border-slate-800/40 shadow-[0_20px_50px_rgba(8,_112,_184,_0.05)];
+  @apply bg-white dark:bg-slate-900 border border-[#e7f5ff] dark:border-slate-800 shadow-[0_8px_40px_-12px_rgba(203,213,225,0.3)] dark:shadow-none;
 }
 
 .glass-button {
-  @apply relative overflow-hidden bg-white/40 dark:bg-slate-800/40 backdrop-blur-md border border-white/80 dark:border-slate-700/50 shadow-sm transition-all duration-500 hover:bg-white/60 dark:hover:bg-slate-700/60;
+  @apply bg-white dark:bg-slate-800 border border-[#e0f2fe] dark:border-slate-700 shadow-sm transition-all duration-300 hover:bg-[#fffbeb] hover:border-sky-300 dark:hover:bg-slate-700/80 dark:hover:border-sky-500/50;
 }
 
-.glass-button:hover {
-  @apply shadow-[0_10px_30px_rgba(99,102,241,0.15)] -translate-y-[2px];
-}
-
-/* Vibrant 3D Premium Button */
+/* Sky Blue & Yellow Accents */
 .btn-premium {
-  @apply relative z-0 overflow-hidden bg-gradient-to-r from-[#4f46e5] to-[#7c3aed] text-white font-bold transition-all duration-500 shadow-[0_10px_25px_-5px_rgba(99,102,241,0.5)] hover:shadow-[0_15px_35px_-5px_rgba(99,102,241,0.6)] hover:scale-[1.02] active:scale-[0.98] border-0;
+  @apply bg-gradient-to-r from-sky-500 to-sky-600 hover:scale-[1.01] active:scale-[0.99] text-white font-bold transition-all duration-300 shadow-[0_4px_14px_0_rgba(14,165,233,0.39)] hover:shadow-sky-500/40 border-0;
 }
 
-.btn-premium::before {
-  content: '';
-  @apply absolute inset-0 -z-10 bg-gradient-to-r from-[#00d2ff] to-[#3a7bd5] opacity-0 transition-opacity duration-500;
-}
-
-.btn-premium:hover::before {
-  @apply opacity-100;
-}
-
-/* Sophisticated Input styling */
+/* Formal Input styling - Chromatic Light */
 .input-premium {
-  @apply bg-[#f8faff] dark:bg-slate-900/80 border border-slate-200/60 dark:border-slate-800/80 focus:bg-white dark:focus:bg-slate-800 focus:border-indigo-400 dark:focus:border-indigo-500 focus:ring-[6px] focus:ring-indigo-500/10 dark:focus:ring-indigo-500/15 shadow-[inset_0_2px_10px_rgba(0,0,0,0.02)] transition-all duration-300 outline-none;
+  @apply bg-white dark:bg-slate-800 border border-[#e0f2fe] dark:border-slate-700 focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 transition-all duration-200 outline-none placeholder-slate-400;
+}
+
+.yellow-badge {
+  @apply px-3 py-1 rounded-full bg-[#fefce8] text-yellow-700 text-[10px] font-bold uppercase tracking-wider border border-[#fef08a];
 }
 
 ::selection {
-  @apply bg-indigo-500/20 text-indigo-900 dark:text-indigo-200;
+  @apply bg-sky-500/20 text-sky-900;
 }

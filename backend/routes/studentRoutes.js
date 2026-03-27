@@ -21,6 +21,7 @@ const uploadFields = upload.fields([
 const studentController = require("../controllers/studentController");
 
 router.get("/", studentController.getStudents);
+router.get("/:id", studentController.getStudent);
 router.post("/", uploadFields, studentController.createStudent);
 router.put("/:id", uploadFields, studentController.updateStudent);
 router.delete("/:id", studentController.deleteStudent);

@@ -15,6 +15,14 @@ exports.getStudents = async (req, res) => {
   res.json(students.map(formatStudent));
 };
 
+// GET BY ID
+exports.getStudent = async (req, res) => {
+  const id = parseInt(req.params.id);
+  const student = await studentModel.getStudentById(id);
+  if (!student) return res.status(404).json({ message: "Not found" });
+  res.json(formatStudent(student));
+};
+
 // POST
 exports.createStudent = async (req, res) => {
   const studentData = req.body;
