@@ -6,6 +6,7 @@ const studentRoutes = require("./routes/studentRoutes");
 const feeRoutes = require("./routes/feeRoutes");
 const courseRoutes = require("./routes/courseRoutes");
 const attendanceRoutes = require("./routes/attendanceRoutes");
+const examRoutes = require("./routes/examRoutes");
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.use("/api/students", studentRoutes);
 app.use("/api/fees", feeRoutes);
 app.use("/api/academic", courseRoutes);
 app.use("/api/attendance", attendanceRoutes);
+app.use("/api/exams", examRoutes);
 
 // Server
 const PORT = 5000;

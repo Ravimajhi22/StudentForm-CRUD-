@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Camera, Upload, Search, ChevronDown } from 'lucide-react';
+import { X, Camera, Upload, Search, ChevronDown, User, Mail, Phone, Calendar, MapPin, CreditCard, Shield } from 'lucide-react';
 import type { Student } from '../types';
 
 import { LOCATIONS } from '../data/locations';
@@ -24,7 +24,7 @@ const StudentModal: React.FC<StudentModalProps> = ({ student, onClose, onSave })
     blood_group: '',
     adhar_number: '',
     country_code: '+91',
-    country: '', // default to empty for selection
+    country: '', 
     address: '',
     state: '',
     district: '',
@@ -55,7 +55,7 @@ const StudentModal: React.FC<StudentModalProps> = ({ student, onClose, onSave })
         name: student.name || '',
         email: student.email || '',
         phone: student.phone || '',
-        dob: student.dob ? student.dob.split('T')[0] : '', // format date if needed
+        dob: student.dob ? student.dob.split('T')[0] : '',
         age: student.age || '',
         gender: student.gender || '',
         father_name: student.father_name || '',
@@ -106,7 +106,6 @@ const StudentModal: React.FC<StudentModalProps> = ({ student, onClose, onSave })
     if (formData.country) {
       const states = Object.keys(LOCATIONS[formData.country] || {});
       setAvailableStates(states);
-      // Reset state and district if the selection is invalid
       if (!states.includes(formData.state)) {
         setFormData((prev: any) => ({ ...prev, state: '', district: '' }));
       }
@@ -119,7 +118,6 @@ const StudentModal: React.FC<StudentModalProps> = ({ student, onClose, onSave })
     if (formData.country && formData.state) {
       const districts = LOCATIONS[formData.country]?.[formData.state] || [];
       setAvailableDistricts(districts);
-      // Reset district if it's not in the new list
       if (!districts.includes(formData.district)) {
         setFormData((prev: any) => ({ ...prev, district: '' }));
       }
@@ -128,7 +126,6 @@ const StudentModal: React.FC<StudentModalProps> = ({ student, onClose, onSave })
     }
   }, [formData.country, formData.state]);
 
-  // Automated Pincode Lookup
   useEffect(() => {
     const fetchAddress = async () => {
       if (formData.pincode.length === 6 && formData.country === 'India') {
@@ -136,26 +133,15 @@ const StudentModal: React.FC<StudentModalProps> = ({ student, onClose, onSave })
         try {
           const response = await fetch(`https://api.postalpincode.in/pincode/${formData.pincode}`);
           const data = await response.json();
-          
           if (data[0].Status === 'Success') {
             const postOffice = data[0].PostOffice[0];
             const state = postOffice.State;
             const district = postOffice.District;
-            
-            // Map common API state names to our LOCATIONS keys if they differ
-            const stateMap: { [key: string]: string } = {
-              "Odisha": "Odisha",
-              "Tamil Nadu": "Tamil Nadu"
-              // Add more mappings if needed
-            };
-            
-            const mappedState = stateMap[state] || state;
-            
-            if (LOCATIONS['India'][mappedState]) {
+            if (LOCATIONS['India'][state]) {
               setFormData((prev: any) => ({
                 ...prev,
-                state: mappedState,
-                district: LOCATIONS['India'][mappedState].includes(district) ? district : prev.district
+                state: state,
+                district: LOCATIONS['India'][state].includes(district) ? district : prev.district
               }));
             }
           }
@@ -166,56 +152,35 @@ const StudentModal: React.FC<StudentModalProps> = ({ student, onClose, onSave })
         }
       }
     };
-
-    const timer = setTimeout(() => {
-      fetchAddress();
-    }, 500); // debounce
-
+    const timer = setTimeout(fetchAddress, 500);
     return () => clearTimeout(timer);
   }, [formData.pincode, formData.country]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    
-    // Strict 10-digit numeric validation for phone fields
-    if (name === 'phone' || name === 'emergency_contact') {
+    if (name === 'phone') {
       const numericValue = value.replace(/\D/g, '').slice(0, 10);
       setFormData((prev: any) => ({ ...prev, [name]: numericValue }));
       return;
     }
-
-    // Pincode validation (6 digits for India)
     if (name === 'pincode' && formData.country === 'India') {
       const numericValue = value.replace(/\D/g, '').slice(0, 6);
       setFormData((prev: any) => ({ ...prev, [name]: numericValue }));
       return;
     }
-
-    // Aadhaar number validation (12 digits)
     if (name === 'adhar_number') {
       const numericValue = value.replace(/\D/g, '').slice(0, 12);
       setFormData((prev: any) => ({ ...prev, [name]: numericValue }));
       return;
     }
-
-    // Automated Age Calculation from DOB
     if (name === 'dob') {
       const dobDate = new Date(value);
       const today = new Date();
       let calAge = today.getFullYear() - dobDate.getFullYear();
-      const m = today.getMonth() - dobDate.getMonth();
-      if (m < 0 || (m === 0 && today.getDate() < dobDate.getDate())) {
-        calAge--;
-      }
-      
-      setFormData((prev: any) => ({ 
-        ...prev, 
-        dob: value, 
-        age: calAge >= 0 ? calAge.toString() : '' 
-      }));
+      if (today.getMonth() < dobDate.getMonth() || (today.getMonth() === dobDate.getMonth() && today.getDate() < dobDate.getDate())) calAge--;
+      setFormData((prev: any) => ({ ...prev, dob: value, age: calAge >= 0 ? calAge.toString() : '' }));
       return;
     }
-
     if (name === 'branch_id') {
       const bId = value;
       setFormData((prev: any) => ({ ...prev, branch_id: bId, course_id: '' }));
@@ -223,7 +188,6 @@ const StudentModal: React.FC<StudentModalProps> = ({ student, onClose, onSave })
       else setFilteredCourses([]);
       return;
     }
-
     setFormData((prev: any) => ({ ...prev, [name]: value }));
   };
 
@@ -233,9 +197,7 @@ const StudentModal: React.FC<StudentModalProps> = ({ student, onClose, onSave })
       setFormData({ ...formData, [field]: file });
       if (field === 'image') {
         const reader = new FileReader();
-        reader.onloadend = () => {
-          setImagePreview(reader.result as string);
-        };
+        reader.onloadend = () => setImagePreview(reader.result as string);
         reader.readAsDataURL(file);
       }
     }
@@ -251,414 +213,210 @@ const StudentModal: React.FC<StudentModalProps> = ({ student, onClose, onSave })
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:pl-72 bg-slate-900/40 dark:bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-200 overflow-y-auto">
-      <div className="bg-white dark:bg-[#0f172a] rounded-[24px] shadow-2xl w-full max-w-[700px] my-auto relative animate-in zoom-in-95 duration-300 flex flex-col border border-slate-200 dark:border-slate-800">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-in fade-in duration-300">
+      <div className="bg-white dark:bg-slate-900 w-full max-w-4xl rounded-xl shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col max-h-[90vh]">
         
-        {/* Close Button Top Right */}
-        <button 
-          type="button"
-          onClick={onClose} 
-          className="absolute top-6 right-6 p-2 text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors z-10"
-        >
-          <X size={24} strokeWidth={2} />
-        </button>
-
-        <form onSubmit={handleSubmit} className="p-5 sm:p-8 flex flex-col items-center">
-          
-          {/* Header section identical to reference */}
-          <div className="w-full mb-4 text-left sm:text-center mt-0">
-            <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight mb-0.5 bg-clip-text text-transparent bg-gradient-to-r from-sky-600 to-sky-400">
-              Student Registration
-            </h2>
-            <p className="text-[12px] font-medium text-slate-500 dark:text-slate-400 italic">
-              expertise you can trust
-            </p>
-          </div>
-
-          {/* Centered Photo Upload */}
-          <div className="flex flex-col items-center mb-4">
-            <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-800 border-[2px] border-slate-50 dark:border-slate-700 flex items-center justify-center overflow-hidden mb-1.5 shadow-sm relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
-              {imagePreview ? (
-                <img src={imagePreview} alt="Profile" className="w-full h-full object-cover" />
-              ) : (
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-slate-400 dark:text-slate-500">
-                  <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
-                  <circle cx="12" cy="7" r="4"></circle>
-                </svg>
-              )}
-              <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                 <Camera className="text-white" size={14} />
-              </div>
+        {/* Institutional Header - FIXED */}
+        <div className="flex justify-between items-center p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30 flex-shrink-0">
+          <div className="flex items-center gap-4">
+            <div className="p-2 bg-navy-950 text-white rounded-lg">
+              <Shield size={20} />
             </div>
+            <div>
+              <h2 className="text-lg font-black text-slate-900 dark:text-white tracking-tight uppercase">
+                {student ? 'Modify Individual Record' : 'Official Student Inscription'}
+              </h2>
+              <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mt-0.5">Institutional Governance & Regulatory Compliance</p>
+            </div>
+          </div>
+          <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-lg transition-colors border border-slate-200 dark:border-slate-700">
+            <X size={18} className="text-slate-400" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
+          <div className="p-6 space-y-6 overflow-y-auto custom-scrollbar flex-1">
             
-            <input 
-              type="file" 
-              accept="image/*" 
-              ref={fileInputRef}
-              onChange={(e) => handleFileChange(e, 'image')}
-              className="hidden" 
-            />
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-sky-500/20 text-sky-600 dark:text-sky-400 font-bold text-[11px] hover:bg-[#fefce8] dark:hover:bg-sky-500/10 transition-all focus:outline-none"
-            >
-              <Camera size={12} />
-              Set Photo
-            </button>
+            {/* Section: Credentials */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              {/* Profile Media */}
+              <div className="md:col-span-1 flex flex-col items-center">
+                  <div className="relative group mb-3">
+                    <div className="w-28 h-28 rounded bg-slate-100 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 overflow-hidden shadow-inner flex items-center justify-center">
+                      {imagePreview ? (
+                        <img src={imagePreview} alt="Profile" className="w-full h-full object-cover" />
+                      ) : (
+                        <User size={40} className="text-slate-300" />
+                      )}
+                    </div>
+                    <button 
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="absolute -bottom-1 -right-1 p-2 bg-navy-950 text-white rounded-lg shadow-xl border border-navy-800 active:scale-95 transition-all"
+                    >
+                      <Camera size={14} />
+                    </button>
+                  </div>
+                  <input type="file" accept="image/*" ref={fileInputRef} onChange={(e) => handleFileChange(e, 'image')} className="hidden" />
+                  <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest text-center">Biometric Identity</p>
+              </div>
+
+              {/* Core Data */}
+              <div className="md:col-span-3 space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="md:col-span-2">
+                        <label className="label-formal">Legal Full Name</label>
+                        <input required type="text" name="name" value={formData.name} onChange={handleChange} className="input-formal w-full px-4 py-2.5 text-[12px] font-bold" placeholder="As per official documentation" />
+                    </div>
+                    <div>
+                        <label className="label-formal">Date of Birth</label>
+                        <input required type="date" name="dob" value={formData.dob} onChange={handleChange} className="input-formal w-full px-4 py-2.5 text-[12px] font-bold" />
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="label-formal">Age</label>
+                          <input required type="number" name="age" value={formData.age} onChange={handleChange} className="input-formal w-full px-4 py-2.5 text-[12px] font-bold" readOnly />
+                        </div>
+                        <div>
+                          <label className="label-formal">Gender</label>
+                          <select required name="gender" value={formData.gender} onChange={handleChange} className="input-formal w-full px-4 py-2.5 text-[12px] font-bold appearance-none">
+                            <option value="" disabled>Select</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                          </select>
+                        </div>
+                    </div>
+                    <div>
+                       <label className="label-formal">Branch Mapping</label>
+                       <select required name="branch_id" value={formData.branch_id} onChange={handleChange} className="input-formal w-full px-4 py-2.5 text-[12px] font-bold appearance-none">
+                         <option value="">Branch...</option>
+                         {branches.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
+                       </select>
+                    </div>
+                    <div>
+                       <label className="label-formal">Assigned Course</label>
+                       <select required name="course_id" value={formData.course_id} onChange={handleChange} disabled={!formData.branch_id} className="input-formal w-full px-4 py-2.5 text-[12px] font-bold appearance-none disabled:bg-slate-50">
+                         <option value="">Course...</option>
+                         {filteredCourses.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                       </select>
+                    </div>
+                  </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+               <div>
+                  <label className="label-formal">Official Email</label>
+                  <div className="relative">
+                    <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
+                    <input required type="email" name="email" value={formData.email} onChange={handleChange} className="input-formal w-full pl-10 pr-4 py-2.5 text-[12px] font-bold" placeholder="jane@institute.edu" />
+                  </div>
+               </div>
+               <div>
+                  <label className="label-formal">Contact Protocol</label>
+                  <div className="flex gap-2">
+                    <div className="relative">
+                        <button type="button" onClick={() => setIsCodeDropdownOpen(!isCodeDropdownOpen)} className="flex items-center gap-2 px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-[12px] font-black text-slate-700 min-w-[70px]">
+                          {formData.country_code} <ChevronDown size={14} className="text-slate-400" />
+                        </button>
+                        {isCodeDropdownOpen && (
+                          <div className="absolute top-full left-0 mt-2 w-64 max-h-48 bg-white border border-slate-200 rounded-lg shadow-2xl z-50 overflow-y-auto custom-scrollbar">
+                             {COUNTRY_CODES.map(c => (
+                               <button key={c.iso} type="button" onClick={() => { setFormData({...formData, country_code: c.code}); setIsCodeDropdownOpen(false); }} className="w-full px-4 py-2 text-left hover:bg-slate-50 text-[11px] font-bold flex justify-between border-b border-slate-50 last:border-0 uppercase tracking-tighter">
+                                 <span>{c.name}</span> <span className="text-navy-600">{c.code}</span>
+                               </button>
+                             ))}
+                          </div>
+                        )}
+                    </div>
+                    <div className="relative flex-1">
+                        <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
+                        <input required type="tel" name="phone" value={formData.phone} onChange={handleChange} maxLength={10} className="input-formal w-full pl-10 pr-4 py-2.5 text-[12px] font-bold" placeholder="10 Digit Number" />
+                    </div>
+                  </div>
+               </div>
+               <div>
+                  <label className="label-formal">National Identity (UID)</label>
+                  <div className="relative">
+                    <CreditCard className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
+                    <input type="text" name="adhar_number" value={formData.adhar_number} onChange={handleChange} maxLength={12} className="input-formal w-full pl-10 pr-4 py-2.5 text-[12px] font-bold" placeholder="xxxx-xxxx-xxxx" />
+                  </div>
+               </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+               <div>
+                  <label className="label-formal">Parental Nomenclature</label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <input required type="text" name="father_name" value={formData.father_name} onChange={handleChange} className="input-formal w-full px-4 py-2.5 text-[12px] font-bold" placeholder="Father's Name" />
+                    <input required type="text" name="mother_name" value={formData.mother_name} onChange={handleChange} className="input-formal w-full px-4 py-2.5 text-[12px] font-bold" placeholder="Mother's Name" />
+                  </div>
+               </div>
+               <div>
+                  <label className="label-formal">Permanent Domicile (Address)</label>
+                  <div className="relative">
+                    <MapPin className="absolute left-3.5 top-3.5 text-slate-400" size={14} />
+                    <textarea required name="address" value={formData.address} onChange={handleChange} rows={1} className="input-formal w-full pl-10 pr-4 py-3 text-[12px] font-bold resize-none" placeholder="Complete institutional address..." />
+                  </div>
+               </div>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div>
+                  <label className="label-formal">Nationality</label>
+                  <select required name="country" value={formData.country} onChange={handleChange} className="input-formal w-full px-3 py-2.5 text-[12px] font-bold appearance-none">
+                    <option value="" disabled>Country</option>
+                    {Object.keys(LOCATIONS).map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
+              </div>
+              <div>
+                  <label className="label-formal">State/Region</label>
+                  <select required name="state" value={formData.state} onChange={handleChange} disabled={!formData.country} className="input-formal w-full px-3 py-2.5 text-[12px] font-bold appearance-none">
+                    <option value="" disabled>State</option>
+                    {availableStates.map(s => <option key={s} value={s}>{s}</option>)}
+                  </select>
+              </div>
+              <div>
+                  <label className="label-formal">District</label>
+                  <select required name="district" value={formData.district} onChange={handleChange} disabled={!formData.state} className="input-formal w-full px-3 py-2.5 text-[12px] font-bold appearance-none">
+                    <option value="" disabled>District</option>
+                    {availableDistricts.map(d => <option key={d} value={d}>{d}</option>)}
+                  </select>
+              </div>
+              <div>
+                  <label className="label-formal">PIN Code {isPincodeLoading && '...'}</label>
+                  <input required type="text" name="pincode" value={formData.pincode} onChange={handleChange} maxLength={6} className="input-formal w-full px-3 py-2.5 text-[12px] font-bold" placeholder="6-Digit" />
+              </div>
+            </div>
+
+            <div className="p-4 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800">
+               <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                     <div className="p-2 bg-white rounded border border-slate-200">
+                        <Upload size={16} className="text-slate-400" />
+                     </div>
+                     <div>
+                        <p className="text-[10px] font-black text-slate-800 dark:text-white uppercase tracking-tight leading-none">Academic Credentials</p>
+                        <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-1">PDF/Image Secured</p>
+                     </div>
+                  </div>
+                  <button type="button" onClick={() => certInputRef.current?.click()} className="px-4 py-2 bg-white text-navy-600 border border-navy-100 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-navy-50 transition-all">
+                    {formData.certificate ? 'Replace' : 'Upload'}
+                  </button>
+                  <input type="file" accept=".pdf,image/*" ref={certInputRef} onChange={(e) => handleFileChange(e, 'certificate')} className="hidden" />
+               </div>
+            </div>
           </div>
 
-          <div className="w-full space-y-3">
-            <div className="border-t border-slate-100 dark:border-slate-800/80 mb-3 w-full absolute left-0"></div>
-
-            {/* Inputs Layout */}
-            <div className="w-full pt-1">
-              <label className="block text-[11px] font-bold text-slate-900 dark:text-slate-300 mb-1">Student Full Name</label>
-              <input
-                required
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                className="w-full px-3 py-1.5 rounded-lg input-premium text-[13px] font-semibold text-slate-900 dark:text-slate-100 placeholder-slate-400"
-                placeholder="e.g., Jane Doe"
-              />
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full">
-              <div>
-                <label className="block text-[11px] font-bold text-slate-900 dark:text-slate-300 mb-1">Date of Birth</label>
-                <input
-                  required
-                  type="date"
-                  name="dob"
-                  value={formData.dob}
-                  onChange={handleChange}
-                  className="w-full px-3 py-1.5 rounded-lg input-premium text-[13px] font-semibold text-slate-900 dark:text-slate-100 placeholder-slate-400"
-                />
-              </div>
-              <div>
-                <label className="block text-[11px] font-bold text-slate-900 dark:text-slate-300 mb-1">Age</label>
-                <input
-                  required
-                  type="number"
-                  name="age"
-                  min="1"
-                  max="100"
-                  value={formData.age}
-                  onChange={handleChange}
-                  className="w-full px-3 py-1.5 rounded-lg input-premium text-[13px] font-semibold text-slate-900 dark:text-slate-100 placeholder-slate-400"
-                  placeholder="e.g., 20"
-                />
-              </div>
-              <div>
-                <label className="block text-[11px] font-bold text-slate-900 dark:text-slate-300 mb-1">Gender</label>
-                <select
-                  required
-                  name="gender"
-                  value={formData.gender}
-                  onChange={handleChange}
-                  className="w-full px-3 py-1.5 rounded-lg input-premium text-[13px] font-semibold text-slate-900 dark:text-slate-100 appearance-none cursor-pointer"
-                >
-                  <option value="" disabled>Select</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                  <option value="Other">Other</option>
-                </select>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
-               <div>
-                <label className="block text-[11px] font-bold text-slate-900 dark:text-slate-300 mb-1">College Branch</label>
-                <select
-                  required
-                  name="branch_id"
-                  value={formData.branch_id}
-                  onChange={handleChange}
-                  className="w-full px-3 py-1.5 rounded-lg input-premium text-[13px] font-semibold text-slate-900 dark:text-slate-100 appearance-none cursor-pointer"
-                >
-                  <option value="">Select Branch</option>
-                  {branches.map((b: any) => <option key={b.id} value={b.id}>{b.name}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className="block text-[11px] font-bold text-slate-900 dark:text-slate-300 mb-1">Assigned Course</label>
-                <select
-                  required
-                  name="course_id"
-                  value={formData.course_id}
-                  onChange={handleChange}
-                  className="w-full px-3 py-1.5 rounded-lg input-premium text-[13px] font-semibold text-slate-900 dark:text-slate-100 appearance-none cursor-pointer"
-                  disabled={!formData.branch_id}
-                >
-                  <option value="">Select Course</option>
-                  {filteredCourses.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
-                </select>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
-              <div>
-                <label className="block text-[11px] font-bold text-slate-900 dark:text-slate-300 mb-1">Email ID</label>
-                <input
-                  required
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="w-full px-3 py-1.5 rounded-lg input-premium text-[13px] font-semibold text-slate-900 dark:text-slate-100 placeholder-slate-400"
-                  placeholder="e.g., jane.doe@example.com"
-                />
-              </div>
-              <div>
-                <label className="block text-[11px] font-bold text-slate-900 dark:text-slate-300 mb-1">Contact Number</label>
-                <div className="flex gap-1.5 relative">
-                  {/* Searchable Country Code Dropdown */}
-                  <div className="relative">
-                    <button
-                      type="button"
-                      onClick={() => setIsCodeDropdownOpen(!isCodeDropdownOpen)}
-                      className="flex items-center justify-between gap-1.5 px-2.5 py-1.5 rounded-lg bg-[#f4f5f8] dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 hover:border-blue-400 transition-all text-[13px] font-bold text-slate-700 dark:text-slate-200 min-w-[70px] h-full shadow-sm"
-                    >
-                      <span>{formData.country_code}</span>
-                      <ChevronDown size={14} className={`text-slate-400 transition-transform ${isCodeDropdownOpen ? 'rotate-180' : ''}`} />
-                    </button>
-
-                    {isCodeDropdownOpen && (
-                      <div className="absolute top-full left-0 mt-2 w-64 max-h-60 bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden z-[100] animate-in zoom-in-95 duration-200">
-                        <div className="p-2 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50">
-                          <div className="relative">
-                            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                            <input
-                              autoFocus
-                              type="text"
-                              value={codeSearch}
-                              onChange={(e) => setCodeSearch(e.target.value)}
-                              placeholder="Search country or code..."
-                              className="w-full pl-9 pr-3 py-1.5 bg-white dark:bg-slate-900 rounded-lg text-[12px] font-medium outline-none border border-slate-200 dark:border-slate-700 focus:border-blue-500"
-                            />
-                          </div>
-                        </div>
-                        <div className="overflow-y-auto max-h-48 scrollbar-premium">
-                          {COUNTRY_CODES.filter(item => 
-                            item.name.toLowerCase().includes(codeSearch.toLowerCase()) || 
-                            item.code.includes(codeSearch)
-                          ).map((item) => (
-                            <button
-                              key={`${item.iso}-${item.code}`}
-                              type="button"
-                              onClick={() => {
-                                setFormData((prev: any) => ({ ...prev, country_code: item.code }));
-                                setIsCodeDropdownOpen(false);
-                                setCodeSearch('');
-                              }}
-                              className="w-full px-4 py-2 text-left hover:bg-sky-50 dark:hover:bg-sky-900/20 flex items-center justify-between group border-b border-slate-50 dark:border-slate-800/50 last:border-0"
-                            >
-                              <div className="flex items-center gap-2">
-                                <span className="text-[10px] font-bold text-slate-400 bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded uppercase">{item.iso}</span>
-                                <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200 truncate max-w-[140px]">{item.name}</span>
-                              </div>
-                              <span className="text-[13px] font-black text-sky-600 dark:text-sky-400">{item.code}</span>
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  <input
-                    required
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    maxLength={10}
-                    pattern="[0-9]{10}"
-                    className="flex-grow px-3 py-1.5 rounded-lg input-premium text-[13px] font-semibold text-slate-900 dark:text-slate-100 placeholder-slate-400"
-                    placeholder="e.g., 9876543210"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="w-full">
-              <label className="block text-[11px] font-bold text-slate-900 dark:text-slate-300 mb-1">Permanent Address</label>
-              <textarea
-                required
-                name="address"
-                value={formData.address}
-                onChange={handleChange}
-                rows={1}
-                className="w-full px-3 py-1.5 rounded-lg input-premium resize-none text-[13px] font-semibold text-slate-900 dark:text-slate-100 placeholder-slate-400"
-                placeholder="Include apartment, street, and area"
-              />
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
-              <div>
-                <label className="block text-[11px] font-bold text-slate-900 dark:text-slate-300 mb-1">Blood Group</label>
-                <select
-                  name="blood_group"
-                  value={formData.blood_group}
-                  onChange={handleChange}
-                  className="w-full px-3 py-1.5 rounded-lg input-premium text-[13px] font-semibold text-slate-900 dark:text-slate-100 appearance-none cursor-pointer"
-                >
-                  <option value="">Unknown</option>
-                  <option value="A+">A+</option>
-                  <option value="A-">A-</option>
-                  <option value="B+">B+</option>
-                  <option value="B-">B-</option>
-                  <option value="O+">O+</option>
-                  <option value="O-">O-</option>
-                  <option value="AB+">AB+</option>
-                  <option value="AB-">AB-</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-[11px] font-bold text-slate-900 dark:text-slate-300 mb-1">Aadhaar Number</label>
-                <input
-                  type="text"
-                  name="adhar_number"
-                  value={formData.adhar_number}
-                  onChange={handleChange}
-                  maxLength={12}
-                  pattern="[0-9]{12}"
-                  title="12 digit Aadhaar number"
-                  className="w-full px-3 py-1.5 rounded-lg input-premium text-[13px] font-semibold text-slate-900 dark:text-slate-100 placeholder-slate-400"
-                  placeholder="xxxx-xxxx-xxxx"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
-              <div>
-                <label className="block text-[11px] font-bold text-slate-900 dark:text-slate-300 mb-1">Father's Name</label>
-                <input
-                  required
-                  type="text"
-                  name="father_name"
-                  value={formData.father_name}
-                  onChange={handleChange}
-                  className="w-full px-3 py-1.5 rounded-lg bg-[#f4f5f8] dark:bg-slate-800/80 border-0 outline-none focus:ring-2 focus:ring-blue-500/50 transition-all text-[13px] font-medium text-slate-900 dark:text-slate-100 placeholder-slate-400"
-                  placeholder="Father's full name"
-                />
-              </div>
-              <div>
-                <label className="block text-[11px] font-bold text-slate-900 dark:text-slate-300 mb-1">Mother's Name</label>
-                <input
-                  required
-                  type="text"
-                  name="mother_name"
-                  value={formData.mother_name}
-                  onChange={handleChange}
-                  className="w-full px-3 py-1.5 rounded-lg bg-[#f4f5f8] dark:bg-slate-800/80 border-0 outline-none focus:ring-2 focus:ring-blue-500/50 transition-all text-[13px] font-medium text-slate-900 dark:text-slate-100 placeholder-slate-400"
-                  placeholder="Mother's full name"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 w-full">
-              <div>
-                <label className="block text-[13px] font-bold text-slate-900 dark:text-slate-300 mb-2">Country</label>
-                <select
-                  required
-                  name="country"
-                  value={formData.country}
-                  onChange={handleChange}
-                  className="w-full px-5 py-3.5 rounded-2xl bg-[#f4f5f8] dark:bg-slate-800/80 border-0 outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all text-[15px] font-medium text-slate-900 dark:text-slate-100 appearance-none cursor-pointer"
-                >
-                  <option value="" disabled>Select country</option>
-                  {Object.keys(LOCATIONS).map(country => (
-                    <option key={country} value={country}>{country}</option>
-                  ))}
-                  <option value="Other">Other</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-[13px] font-bold text-slate-900 dark:text-slate-300 mb-2">State Region</label>
-                <select
-                  required
-                  name="state"
-                  value={formData.state}
-                  onChange={handleChange}
-                  disabled={!formData.country || !availableStates.length}
-                  className="w-full px-5 py-3.5 rounded-2xl bg-[#f4f5f8] dark:bg-slate-800/80 border-0 outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all text-[15px] font-medium text-slate-900 dark:text-slate-100 appearance-none cursor-pointer disabled:opacity-50"
-                >
-                  <option value="" disabled>Select state</option>
-                  {availableStates.map(state => (
-                    <option key={state} value={state}>{state}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full">
-              <div>
-                <label className="block text-[11px] font-bold text-slate-900 dark:text-slate-300 mb-1">Local District</label>
-                <select
-                  required
-                  name="district"
-                  value={formData.district}
-                  onChange={handleChange}
-                  disabled={!formData.state}
-                  className="w-full px-3 py-1.5 rounded-lg bg-[#f4f5f8] dark:bg-slate-800/80 border-0 outline-none focus:ring-2 focus:ring-blue-500/50 transition-all text-[13px] font-medium text-slate-900 dark:text-slate-100 appearance-none cursor-pointer disabled:opacity-50"
-                >
-                  <option value="" disabled>Select district</option>
-                  {availableDistricts.map(dist => (
-                    <option key={dist} value={dist}>{dist}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="relative">
-                <label className="block text-[11px] font-bold text-slate-900 dark:text-slate-300 mb-1">
-                  Pincode {isPincodeLoading && <span className="text-sky-500 animate-pulse ml-1 text-[10px] font-medium">Fetching Area...</span>}
-                </label>
-                <input
-                  required
-                  type="text"
-                  name="pincode"
-                  pattern="[0-9]{5,6}"
-                  title="5 or 6 digit postal code"
-                  value={formData.pincode}
-                  onChange={handleChange}
-                  className="w-full px-3 py-1.5 rounded-lg bg-[#f4f5f8] dark:bg-slate-800/80 border-0 outline-none focus:ring-2 focus:ring-blue-500/50 transition-all text-[13px] font-medium text-slate-900 dark:text-slate-100 placeholder-slate-400"
-                  placeholder="e.g., 110001"
-                  maxLength={6}
-                />
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-bold text-slate-900 dark:text-slate-300 mb-1">Certificate</label>
-                <div 
-                  onClick={() => certInputRef.current?.click()}
-                  className="w-full px-3 py-1.5 rounded-lg bg-[#f4f5f8] dark:bg-slate-800/80 border border-dashed border-slate-300 dark:border-slate-600 outline-none hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer transition-all flex items-center justify-between"
-                >
-                  <span className={`text-[13px] truncate font-medium ${formData.certificate ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400'}`}>
-                    {formData.certificate ? 'Selected' : 'Upload File'}
-                  </span>
-                  <Upload size={14} className="text-slate-400 flex-shrink-0 ml-1" />
-                </div>
-                <input 
-                  type="file" 
-                  accept="image/*,.pdf" 
-                  ref={certInputRef}
-                  onChange={(e) => handleFileChange(e, 'certificate')}
-                  className="hidden" 
-                />
-              </div>
-            </div>
-
-            <div className="pt-1.5 w-full">
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full py-3.5 rounded-xl text-[15px] btn-premium flex items-center justify-center gap-2 group shadow-sky-500/25"
-              >
-                {isSubmitting ? 'Processing...' : (student ? 'SAVE CHANGES' : 'CONFIRM REGISTRATION')}
-              </button>
-            </div>
+          <div className="p-6 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 flex gap-4 flex-shrink-0">
+             <button type="button" onClick={onClose} className="flex-1 py-3 font-black text-[10px] uppercase tracking-[0.2em] text-slate-500 hover:bg-slate-50 transition-colors">Discard</button>
+             <button type="submit" disabled={isSubmitting} className="flex-[2] py-3 bg-navy-950 text-white font-black text-[10px] uppercase tracking-[0.2em] rounded-lg shadow-lg shadow-navy-950/25 active:scale-95 transition-all border border-navy-800 disabled:opacity-50">
+               {isSubmitting ? 'Finalizing...' : (student ? 'Update Record' : 'Confirm Inscription')}
+             </button>
           </div>
         </form>
       </div>

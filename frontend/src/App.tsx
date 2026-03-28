@@ -1,11 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { 
-  ChevronDown, Users, GraduationCap, Search, PieChart, 
-  UserPlus, Database, FileText, UserCheck 
+  Search, UserPlus, UserCheck, ShieldCheck, TrendingUp, 
+  Bell, Settings, User, PieChart, Sun, Moon, LogOut
 } from 'lucide-react';
-import * as XLSX from 'xlsx';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
 import StudentList from './components/StudentList';
 import StudentModal from './components/StudentModal';
 import StudentProfile from './components/StudentProfile';
@@ -14,6 +11,7 @@ import StudentFeeModal from './components/StudentFeeModal';
 import Sidebar from './components/Sidebar';
 import AcademicManagement from './components/AcademicManagement';
 import AttendanceManagement from './components/AttendanceManagement';
+import Exams from './components/Exams';
 import type { Student } from './types';
 
 function App() {
@@ -35,30 +33,33 @@ function App() {
     }
   }, [isDark]);
 
-  const [activeView, setActiveView] = useState<'dashboard' | 'students' | 'fees' | 'academic' | 'attendance'>('dashboard');
+  const [activeView, setActiveView] = useState<'dashboard' | 'students' | 'fees' | 'academic' | 'attendance' | 'exams'>('dashboard');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
   const [viewingStudent, setViewingStudent] = useState<Student | null>(null);
   const [selectedStudentForFees, setSelectedStudentForFees] = useState<Student | null>(null);
-  const [isExportOpen, setIsExportOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const exportRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (exportRef.current && !exportRef.current.contains(event.target as Node)) {
-        setIsExportOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
   const [attendanceSummary, setAttendanceSummary] = useState({ total: 0, present: 0 });
 
   useEffect(() => {
     fetchStudents();
     fetchAttendanceSummary();
+
+    // Dynamically inject Google Translate script to ensure DOM is ready
+    if (!(window as any).googleTranslateElementInit) {
+      (window as any).googleTranslateElementInit = () => {
+        if ((window as any).google && (window as any).google.translate) {
+          new (window as any).google.translate.TranslateElement(
+            { pageLanguage: 'en', layout: (window as any).google.translate.TranslateElement.InlineLayout.SIMPLE },
+            'google_translate_element'
+          );
+        }
+      };
+      const addScript = document.createElement('script');
+      addScript.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+      addScript.async = true;
+      document.body.appendChild(addScript);
+    }
   }, []);
 
   const fetchAttendanceSummary = async () => {
@@ -79,76 +80,6 @@ function App() {
     } catch (err) {
       console.error("Fetch error:", err);
     }
-  };
-
-  useEffect(() => {
-    fetchStudents();
-  }, []);
-
-  // Stats Calculation
-  const stats = {
-    total: students.length,
-    male: students.filter(s => s.gender === 'Male').length,
-    female: students.filter(s => s.gender === 'Female').length,
-    other: students.filter(s => s.gender === 'Other').length,
-  };
-
-  // EXPORT EXCEL
-  const exportToExcel = () => {
-    const worksheetData = students.map((s) => ({
-      ID: s.id,
-      Name: s.name,
-      Email: s.email || '-',
-      'Country Code': s.country_code || '+91',
-      Phone: s.phone || '-',
-      Age: s.age || '-',
-      DOB: s.dob ? new Date(s.dob).toLocaleDateString() : '-',
-      Gender: s.gender || '-',
-      "Father's Name": s.father_name || '-',
-      "Mother's Name": s.mother_name || '-',
-      "Blood Group": s.blood_group || '-',
-      "Aadhaar Number": s.adhar_number || '-',
-      Address: s.address,
-      State: s.state,
-      District: s.district,
-      Country: s.country || 'India',
-      Pincode: s.pincode,
-      'Fee Balance': (s as any).fee_balance || 0,
-      'Fee Status': (s as any).fee_status || 'Pending',
-    }));
-    const worksheet = XLSX.utils.json_to_sheet(worksheetData);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Students");
-    XLSX.writeFile(workbook, "students_data.xlsx");
-  };
-
-  // EXPORT PDF
-  const exportToPDF = () => {
-    const doc = new jsPDF();
-    doc.text("Student Registration Data", 14, 15);
-    
-    const tableColumn = ["ID", "Name", "Email", "Phone", "Age", "Gender", "Blood Group", "Aadhaar", "Location", "Fee Balance", "Status"];
-    const tableRows = students.map(s => [
-      s.id,
-      s.name,
-      s.email || '-',
-      `${s.country_code || '+91'} ${s.phone || '-'}`,
-      s.age || '-',
-      s.gender || '-',
-      s.blood_group || '-',
-      s.adhar_number || '-',
-      `${s.district}, ${s.state}`,
-      `₹${(s as any).fee_balance || 0}`,
-      (s as any).fee_status || 'Pending'
-    ]);
-
-    autoTable(doc, {
-      head: [tableColumn],
-      body: tableRows,
-      startY: 20,
-    });
-
-    doc.save("students_data.pdf");
   };
 
   const handleEdit = (student: Student) => {
@@ -214,173 +145,167 @@ function App() {
   );
 
   return (
-    <div className="flex min-h-screen bg-[#f8fafc] dark:bg-[#0f172a] text-slate-800 dark:text-slate-200 selection:bg-blue-500/20 dark:selection:bg-blue-500/30 transition-colors duration-500">
+    <div className="flex min-h-screen bg-white dark:bg-[#0c111d] text-slate-800 dark:text-slate-200 transition-colors duration-500 overflow-hidden font-sans">
       
-      {/* Sidebar - Dashboard Navigation */}
+      {/* Sidebar - Governance Navigation */}
       <Sidebar 
-        isDark={isDark}
-        onToggleDark={() => setIsDark(!isDark)}
         activeView={activeView}
         onViewChange={setActiveView}
-        stats={stats}
       />
 
       {/* Main Content Area */}
-      <div className="flex-1 ml-72 p-8 relative overflow-y-auto h-screen">
+      <div className="flex-1 ml-64 min-h-screen relative flex flex-col overflow-y-auto h-screen">
         
-        <div className="max-w-6xl mx-auto space-y-8 relative z-10">
-          
-          {/* Dashboard Header - Pill Shaped Compact Design */}
-          <header className={`flex flex-col md:flex-row items-center justify-between gap-4 bg-white dark:bg-slate-900 px-6 py-2.5 rounded-full border border-[#e7f5ff] dark:border-slate-800 shadow-[0_4px_20px_rgba(203,213,225,0.15)] dark:shadow-none relative z-[40] transition-all duration-300`}>
-            
-            {/* Logo Section */}
-            <div className="flex items-center gap-3 cursor-pointer group" onClick={() => setActiveView('dashboard')}>
-              <div className="relative w-9 h-9 flex-shrink-0">
-                <div className="absolute bottom-1 left-0 w-4.5 h-4.5 bg-slate-500 rounded-[2px] shadow-sm transform group-hover:-translate-y-0.5 transition-transform duration-300"></div>
-                <div className="absolute top-1 right-0 w-4.5 h-4.5 bg-[#fbbf24] rounded-[2px] shadow-sm transform group-hover:translate-x-0.5 transition-transform duration-300"></div>
-              </div>
-              <div className="flex flex-col">
-                <h1 className="text-xl font-black tracking-tight leading-none">
-                  <span className="text-slate-800 dark:text-white uppercase">Maipro</span>
-                  <span className="text-sky-500 uppercase">soft</span>
-                </h1>
-                <p className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] mt-1.5 ml-0.5">
-                  EXPERTISE YOU CAN TRUST
-                </p>
-              </div>
+        {/* Institutional Banner / Header - Compacted */}
+        <header className="institution-banner flex items-center justify-between sticky top-0 z-[50] bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-8 py-2.5 border-b border-slate-200 dark:border-slate-800">
+          <div className="flex items-center gap-4">
+             <div className="w-9 h-9 bg-navy-500 rounded flex items-center justify-center text-white shadow-lg">
+                <ShieldCheck size={20} />
+             </div>
+            <div>
+              <h2 className="text-lg font-black text-slate-900 dark:text-white tracking-tight uppercase leading-none">
+                {activeView === 'dashboard' ? 'Governance Dashboard' : 
+                 activeView === 'students' ? 'Personnel Registry' :
+                 activeView === 'fees' ? 'Fiscal Oversight' :
+                 activeView === 'academic' ? 'Faculty Structure' :
+                 activeView === 'attendance' ? 'Presence Registry' : 'Assessment Board'}
+              </h2>
+              <p className="text-[8px] font-black text-slate-400 uppercase tracking-[0.3em] mt-1.5 opacity-70">Authenticated Session: Admin_V4</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-5">
+            {/* 1. Search Bar - Compacted */}
+            <div className="relative group w-64">
+              <Search size={12} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                placeholder="SEARCH..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="input-formal w-full pl-9 pr-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest bg-slate-50 dark:bg-slate-800 border-none outline-none transition-all"
+              />
             </div>
 
-            {/* Middle Section: Search & Actions */}
-            <div className="flex flex-1 items-center justify-end gap-3 w-full md:w-auto">
-              {/* Compact Search Bar */}
-              <div className="relative w-full max-w-[280px]">
-                <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-                <input
-                  type="text"
-                  placeholder="Fast search..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 rounded-full border border-[#e0f2fe] dark:border-slate-700 bg-white dark:bg-slate-800 text-[13px] font-medium focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 transition-all outline-none"
-                />
-              </div>
-
-              {/* Export Dropdown */}
-              <div className="relative" ref={exportRef}>
-                <button
-                  onClick={() => setIsExportOpen(!isExportOpen)}
-                  className={`flex items-center justify-between gap-2 px-5 py-2 rounded-2xl border font-bold text-[13px] transition-all duration-300 shadow-sm min-w-[120px] ${
-                    isExportOpen 
-                      ? 'bg-[#fffbeb] border-sky-400 text-sky-600 dark:bg-sky-500/10 dark:border-sky-400 dark:text-sky-400' 
-                      : 'bg-white border-slate-200 text-slate-500 hover:border-sky-300 dark:bg-slate-800/40 dark:border-slate-700 dark:text-slate-300 dark:hover:border-slate-600'
-                  }`}
-                >
-                  <span>Export</span>
-                  <ChevronDown size={14} className={`transition-transform duration-300 ${isExportOpen ? 'rotate-180' : ''}`} />
-                </button>
-
-                <div className={`absolute top-full right-0 mt-3 w-44 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden z-[100] shadow-xl transition-all duration-300 origin-top-right ${isExportOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-95 invisible'}`}>
-                  <button onClick={() => { exportToExcel(); setIsExportOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-sky-50 dark:hover:bg-slate-800 transition-colors border-b border-slate-100 dark:border-slate-800">
-                    <div className="p-1.5 bg-green-500/10 text-green-600 rounded-lg"><Database size={16} /></div>
-                    Excel Report
+            <div className="flex items-center gap-3 pr-6 border-r border-slate-200 dark:border-slate-800">
+               {/* 2. Notifications */}
+               <div className="relative group/notif">
+                  <button className="p-2.5 bg-white dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-500 hover:text-navy-950 dark:hover:text-white transition-all relative">
+                     <Bell size={16} />
+                     <span className="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full border-2 border-white dark:border-slate-900 shadow-sm animate-pulse"></span>
                   </button>
-                  <button onClick={() => { exportToPDF(); setIsExportOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-sky-50 dark:hover:bg-slate-800 transition-colors">
-                    <div className="p-1.5 bg-rose-500/10 text-rose-600 rounded-lg"><FileText size={16} /></div>
-                    PDF Catalog
-                  </button>
-                </div>
-              </div>
+                  <div className="absolute top-full right-0 mt-2 w-80 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden z-[100] shadow-2xl opacity-0 invisible group-hover/notif:opacity-100 group-hover/notif:visible transition-all duration-300 origin-top-right">
+                     <div className="bg-slate-50 dark:bg-slate-800/50 px-5 py-3 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                        <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Live Alerts</span>
+                        <span className="text-[9px] font-black text-navy-600 uppercase tracking-widest cursor-pointer hover:underline">Mark Read</span>
+                     </div>
+                     <div className="max-h-64 overflow-y-auto">
+                        <div className="p-4 border-b border-slate-100 dark:border-slate-800/50 flex gap-3 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer">
+                           <div className="w-8 h-8 rounded bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center text-emerald-600 flex-shrink-0">
+                              <UserCheck size={14} />
+                           </div>
+                           <div>
+                              <p className="text-[11px] font-black text-slate-700 dark:text-slate-200 uppercase leading-none mb-1">Authenticated Entry</p>
+                              <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tight">New student inscription recorded.</p>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
 
-              {/* Add Student Button */}
-              <button
-                onClick={() => { setEditingStudent(null); setIsModalOpen(true); }}
-                className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-sky-500 hover:bg-sky-600 text-white text-[13px] font-black shadow-lg shadow-sky-500/25 active:scale-[0.98] transition-all group"
-              >
-                <div className="p-1 bg-white/20 rounded-full group-hover:bg-white/30 transition-colors">
-                  <UserPlus size={16} strokeWidth={2.5} />
-                </div>
-                <span>ADD STUDENT</span>
-              </button>
+               {/* 3. Settings & Language Dropdown */}
+               <div className="relative group/settings">
+                  <button className="p-2.5 bg-white dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-500 hover:text-navy-950 dark:hover:text-white transition-all" title="System Configuration">
+                     <Settings size={16} />
+                  </button>
+                  <div className="absolute top-full right-0 mt-2 w-64 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden z-[100] shadow-2xl opacity-0 pointer-events-none group-hover/settings:opacity-100 group-hover/settings:pointer-events-auto transition-all duration-300 origin-top-right">
+                     <div className="bg-slate-50 dark:bg-slate-800/50 px-5 py-3 border-b border-slate-100 dark:border-slate-800">
+                        <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Application Settings</span>
+                     </div>
+                     <div className="p-4 flex flex-col gap-4">
+                        <div>
+                           <p className="text-[10px] font-black text-navy-600 uppercase tracking-widest mb-2">Global Language</p>
+                           <div className="h-9 flex items-center rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 gt-custom-wrapper">
+                              <div id="google_translate_element"></div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+
+               {/* 4. Dark Mode Toggle */}
+               <button 
+                  onClick={() => setIsDark(!isDark)}
+                  className="p-2.5 bg-white dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-500 hover:text-navy-950 dark:hover:text-white transition-all"
+                  title={isDark ? "Enable Light Mode" : "Enable Dark Mode"}
+               >
+                  {isDark ? <Sun size={16} /> : <Moon size={16} />}
+               </button>
+
+               {/* 5. Logout */}
+               <button 
+                  className="p-2.5 bg-rose-50 dark:bg-rose-500/10 border border-rose-100 dark:border-rose-500/20 rounded-lg text-rose-500 hover:bg-rose-500 hover:text-white transition-all"
+                  title="Terminate Session"
+               >
+                  <LogOut size={16} />
+               </button>
             </div>
-          </header>
+
+            <div className="flex items-center gap-4 group cursor-pointer">
+               <div className="w-11 h-11 rounded-full border-2 border-navy-500 p-0.5 bg-white dark:bg-slate-800 relative group-hover:scale-105 transition-all">
+                  <div className="w-full h-full rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden flex items-center justify-center text-slate-400">
+                     <User size={20} />
+                  </div>
+                  <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 border-2 border-white dark:border-slate-900 rounded-full shadow-sm" />
+               </div>
+            </div>
+
+            <button
+              onClick={() => { setEditingStudent(null); setIsModalOpen(true); }}
+              className="ml-2 flex items-center gap-2 px-6 py-2.5 rounded-lg bg-navy-950 text-white text-[10px] font-black uppercase tracking-[0.2em] shadow-lg shadow-navy-950/20 active:scale-95 transition-all outline-none border border-navy-800 hover:bg-navy-900"
+            >
+              <UserPlus size={14} />
+              <span>Enroll</span>
+            </button>
+          </div>
+        </header>
+
+        <div className="p-10 flex-1 overflow-y-auto">
+          <div className="max-w-7xl mx-auto space-y-8">
 
           <main>
             {activeView === 'dashboard' ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
-                {/* Dashboard Widgets */}
-                <div className="col-span-1 lg:col-span-2 glass-panel p-8 rounded-[2.5rem] flex flex-col min-h-[400px]">
-                  <h3 className="text-xl font-black mb-6 flex items-center gap-2">
-                    <GraduationCap className="text-blue-500" /> Recent Activity
-                  </h3>
-                  <div className="flex-1 space-y-4">
-                    {students.slice(0, 5).map(s => (
-                      <div key={s.id} className="flex items-center justify-between p-4 rounded-3xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800/60 transition-all hover:scale-[1.01]">
-                        <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-1">
-                            {s.image ? <img src={s.image} className="w-full h-full object-cover rounded-xl" /> : <div className="w-full h-full bg-blue-500/10 flex items-center justify-center text-blue-500"><Users size={20} /></div>}
-                          </div>
-                          <div>
-                            <p className="font-black text-slate-800 dark:text-white">{s.name}</p>
-                            <p className="text-xs font-bold text-slate-400 uppercase">{s.email}</p>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-xs font-black text-blue-500 uppercase tracking-wider">{s.gender}</p>
-                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">{s.course_name || s.district}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="space-y-6">
-                  <div className="glass-panel p-6 rounded-[2.5rem] bg-gradient-to-br from-indigo-600 to-blue-500 text-white shadow-xl shadow-indigo-500/20">
-                     <p className="text-xs font-black uppercase tracking-widest opacity-80 mb-1">Live Presence Today</p>
-                     <div className="flex justify-between items-end">
-                        <h4 className="text-4xl font-black">
-                          {Math.round((attendanceSummary.present / attendanceSummary.total) * 100 || 0)}%
-                        </h4>
-                        <UserCheck size={28} className="mb-1" />
-                     </div>
-                     <div className="mt-4 h-2 w-full bg-white/20 rounded-full overflow-hidden">
-                        <div className="h-full bg-white rounded-full" style={{ width: `${(attendanceSummary.present / attendanceSummary.total) * 100 || 0}%` }}></div>
-                     </div>
-                     <button onClick={() => setActiveView('attendance')} className="mt-6 w-full py-3 rounded-2xl bg-white/10 hover:bg-white/20 backdrop-blur-md transition-all font-bold text-xs uppercase tracking-widest">
-                        Open Attendance
-                     </button>
-                  </div>
-
-                  <div className="glass-panel p-6 rounded-[2.5rem]">
-                    <h4 className="text-lg font-black mb-4 flex items-center gap-2">
-                       <PieChart size={20} className="text-cyan-500" /> Academic Metrics
-                    </h4>
-                    <div className="space-y-3">
-                       {Array.from(new Set(students.map(s => s.course_name).filter(Boolean))).slice(0, 4).map(course => {
-                          const count = students.filter(s => s.course_name === course).length;
-                          const percent = (count / students.length) * 100;
-                          return (
-                             <div key={course as string} className="space-y-1">
-                                <div className="flex justify-between text-[11px] font-black uppercase">
-                                   <span className="text-slate-500">{course}</span>
-                                   <span className="text-blue-500">{count} Std.</span>
-                                </div>
-                                <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                                   <div className="h-full bg-blue-500 rounded-full" style={{ width: `${percent}%` }}></div>
-                                </div>
-                             </div>
-                          );
-                       })}
+              <div className="flex flex-col items-center justify-center min-h-[60vh] text-center animate-in fade-in zoom-in duration-700">
+                 <div className="w-24 h-24 bg-navy-50 dark:bg-navy-500/10 rounded-3xl flex items-center justify-center text-navy-600 mb-8 border border-navy-100 dark:border-navy-500/20 shadow-xl shadow-navy-500/5">
+                    <ShieldCheck size={48} />
+                 </div>
+                 <h3 className="text-3xl font-black text-slate-900 dark:text-white uppercase tracking-tighter mb-4">
+                    Welcome, Administrator
+                 </h3>
+                 <p className="text-slate-500 dark:text-slate-400 text-sm max-w-md font-medium leading-relaxed">
+                    Institutional governance is currently at optimal levels. Select a module from the navigation to begin oversight operations.
+                 </p>
+                 <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-3xl">
+                    <div className="p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm hover:border-navy-500 transition-colors cursor-pointer group" onClick={() => setActiveView('students')}>
+                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 group-hover:text-navy-600">Personnel</p>
+                       <p className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">{students.length}</p>
                     </div>
-                  </div>
-                </div>
+                    <div className="p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm hover:border-navy-500 transition-colors cursor-pointer group" onClick={() => setActiveView('attendance')}>
+                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 group-hover:text-navy-600">Attendance</p>
+                       <p className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">{Math.round((attendanceSummary.present / attendanceSummary.total) * 100 || 0)}%</p>
+                    </div>
+                 </div>
               </div>
             ) : viewingStudent ? (
               <StudentProfile student={viewingStudent} onClose={() => setViewingStudent(null)} />
             ) : activeView === 'fees' ? (
-              <FeeManagement />
+              <FeeManagement onUpdate={fetchStudents} />
             ) : activeView === 'academic' ? (
               <AcademicManagement />
             ) : activeView === 'attendance' ? (
               <AttendanceManagement />
+            ) : activeView === 'exams' ? (
+              <Exams />
             ) : (
               <StudentList
                 students={filteredStudents}
@@ -393,24 +318,25 @@ function App() {
           </main>
         </div>
       </div>
-
-      {/* Modal */}
-      {isModalOpen && (
-        <StudentModal
-          student={editingStudent}
-          onClose={handleCloseModal}
-          onSave={handleSave}
-        />
-      )}
-      {selectedStudentForFees && (
-        <StudentFeeModal 
-          student={selectedStudentForFees} 
-          onClose={() => setSelectedStudentForFees(null)}
-          onUpdate={fetchStudents}
-        />
-      )}
     </div>
-  );
+
+    {/* Official Modals */}
+    {isModalOpen && (
+      <StudentModal
+        student={editingStudent}
+        onClose={handleCloseModal}
+        onSave={handleSave}
+      />
+    )}
+    {selectedStudentForFees && (
+      <StudentFeeModal 
+        student={selectedStudentForFees} 
+        onClose={() => setSelectedStudentForFees(null)}
+        onUpdate={fetchStudents}
+      />
+    )}
+  </div>
+);
 }
 
 export default App;

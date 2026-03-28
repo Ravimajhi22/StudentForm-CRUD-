@@ -46,10 +46,34 @@ const updateStudentFee = async (studentId, data) => {
     }
 };
 
+const assignFeeToStudent = async (studentId, amount) => {
+    // Check if student already has a fee record
+    const checkExist = await pool.query("SELECT * FROM student_fees WHERE student_id = $1", [studentId]);
+    
+    if (checkExist.rows.length > 0) {
+        const newTotal = parseFloat(checkExist.rows[0].total_amount) + parseFloat(amount);
+        const paid = parseFloat(checkExist.rows[0].paid_amount);
+        const status = paid >= newTotal ? 'Paid' : (paid > 0 ? 'Partial' : 'Pending');
+        
+        const result = await pool.query(
+            "UPDATE student_fees SET total_amount=$1, status=$2 WHERE student_id=$3 RETURNING *",
+            [newTotal, status, studentId]
+        );
+        return result.rows[0];
+    } else {
+        const result = await pool.query(
+            "INSERT INTO student_fees (student_id, total_amount, paid_amount, status) VALUES ($1, $2, 0, 'Pending') RETURNING *",
+            [studentId, amount]
+        );
+        return result.rows[0];
+    }
+};
+
 module.exports = {
     getAllFees,
     addFeeStructure,
     deleteFeeStructure,
     getStudentFees,
-    updateStudentFee
+    updateStudentFee,
+    assignFeeToStudent
 };

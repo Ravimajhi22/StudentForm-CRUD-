@@ -23,3 +23,25 @@ export interface Student {
   branch_name?: string;
   course_name?: string;
 }
+
+export interface Course {
+  id: number;
+  branch_id: number;
+  name: string;
+  syllabus_pdf?: string;
+  branch_name?: string;
+}
+
+export interface Exam {
+  id: number;
+  exam_name: string;
+  course_id: number;
+  course_name?: string;
+  exam_date: string;
+  start_time: string;
+  end_time: string;
+  room_number?: string;
+  total_marks: number;
+  description?: string;
+  created_at?: string;
+}

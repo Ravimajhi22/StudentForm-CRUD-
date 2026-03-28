@@ -52,4 +52,14 @@ router.post("/student/:studentId", async (req, res) => {
     }
 });
 
+// Assign fee to student
+router.post("/assign/:studentId", async (req, res) => {
+    try {
+        const result = await feeModel.assignFeeToStudent(req.params.studentId, req.body.amount);
+        res.json(result);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 module.exports = router;

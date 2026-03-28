@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, FileText, User, Mail, Calendar, Users, Globe, CreditCard, QrCode } from 'lucide-react';
+import { ArrowLeft, FileText, User, Mail, Calendar, Users, Globe, CreditCard, QrCode, Phone, MapPin, ShieldCheck, CheckCircle, Clock } from 'lucide-react';
 import StudentQRCard from './StudentQRCard';
 import type { Student } from '../types';
 
@@ -10,235 +10,204 @@ interface StudentProfileProps {
 
 const StudentProfile: React.FC<StudentProfileProps> = ({ student, onClose }) => {
   const [showQR, setShowQR] = useState(false);
+  
   return (
-    <div className="glass-panel p-6 sm:p-10 rounded-3xl transition-all duration-500 animate-in fade-in slide-in-from-bottom-4 shadow-[0_12px_40px_rgba(31,38,135,0.08)]">
-      {/* Header bar */}
-      <button 
-        onClick={onClose}
-        className="inline-flex items-center gap-2 mb-8 px-4 py-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-white/50 dark:hover:bg-slate-800/50 transition-all group font-bold font-mono tracking-tight"
-      >
-        <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
-        Back to Dashboard
-      </button>
-
-      <div className="flex flex-col md:flex-row gap-10">
-        {/* Photo Section */}
-        <div className="flex-shrink-0 flex flex-col items-center gap-5">
-          <div className="w-48 h-48 sm:w-56 sm:h-56 rounded-[2rem] overflow-hidden shadow-2xl ring-4 ring-white/50 dark:ring-slate-700/50 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-slate-800 dark:to-slate-700 flex items-center justify-center transform hover:rotate-1 hover:scale-105 transition-all duration-500">
-            {student.image ? (
-              <img src={student.image} alt={student.name} className="w-full h-full object-cover" />
-            ) : (
-              <User size={80} className="text-blue-300 dark:text-slate-500" strokeWidth={1.5} />
-            )}
-          </div>
-          <div className="px-5 py-2 bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm text-blue-700 dark:text-blue-300 rounded-full text-sm font-bold tracking-[0.2em] shadow-sm border border-white/50 dark:border-slate-700/50">
-            STU-{1000 + student.id}
-          </div>
-        </div>
-
-        {/* Details Section */}
-        <div className="flex-grow space-y-8">
-          <div>
-            <h2 className="text-3xl sm:text-4xl font-black text-slate-800 dark:text-white tracking-tight mb-3">
-              {student.name}
-            </h2>
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-emerald-50/80 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 text-sm font-extrabold tracking-wide border border-emerald-100 dark:border-emerald-500/20 shadow-sm">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-              ACTIVE STUDENT
-            </div>
-            <button 
-              onClick={() => setShowQR(true)}
-              className="ml-4 inline-flex items-center gap-2 px-4 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/25"
-            >
-              <QrCode size={14} />
-              Generate ID Card
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            
-            {/* Contact Information Card */}
-            <div className="bg-white/40 dark:bg-[#1e293b]/40 rounded-[2rem] p-8 border border-white/60 dark:border-slate-700/50 hover:shadow-[0_20px_40px_rgba(99,102,241,0.1)] transition-all duration-500 hover:-translate-y-1.5 backdrop-blur-md group">
-              <div className="flex items-center gap-3 text-blue-900/40 dark:text-blue-300/40 mb-6 border-b border-blue-100/50 dark:border-slate-700/50 pb-4">
-                <div className="p-2 bg-blue-500/10 rounded-lg group-hover:bg-blue-500/20 transition-colors">
-                  <Mail size={20} className="text-blue-600 dark:text-blue-400" />
-                </div>
-                <h3 className="text-xs font-black uppercase tracking-[0.2em] text-blue-900/60 dark:text-blue-300/60">Contact Hub</h3>
-              </div>
-              <div className="space-y-6">
-                <div>
-                  <p className="text-[10px] font-black text-indigo-900/40 dark:text-indigo-300/40 uppercase tracking-[0.2em] mb-1.5">Primary Email</p>
-                  <p className="text-slate-900 dark:text-slate-100 font-extrabold text-[16px] tracking-tight">{student.email || 'N/A'}</p>
-                </div>
-                <div>
-                  <p className="text-[10px] font-black text-indigo-900/40 dark:text-indigo-300/40 uppercase tracking-[0.2em] mb-1.5">Secure Phone</p>
-                  <p className="text-slate-900 dark:text-slate-100 font-extrabold text-[16px] tracking-tight">{student.country_code || '+91'} {student.phone || 'N/A'}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Personal Profile Card */}
-            <div className="bg-white/40 dark:bg-[#1e293b]/40 rounded-[2rem] p-8 border border-white/60 dark:border-slate-700/50 hover:shadow-[0_20px_40px_rgba(16,185,129,0.1)] transition-all duration-500 hover:-translate-y-1.5 backdrop-blur-md group">
-              <div className="flex items-center gap-3 text-emerald-900/40 dark:text-emerald-300/40 mb-6 border-b border-emerald-100/50 dark:border-slate-700/50 pb-4">
-                <div className="p-2 bg-emerald-500/10 rounded-lg group-hover:bg-emerald-500/20 transition-colors">
-                  <Calendar size={20} className="text-emerald-600 dark:text-emerald-400" />
-                </div>
-                <h3 className="text-xs font-black uppercase tracking-[0.2em] text-emerald-900/60 dark:text-emerald-300/60">Profile Matrix</h3>
-              </div>
-              <div className="grid grid-cols-2 gap-6">
-                <div>
-                  <p className="text-[10px] font-black text-emerald-900/40 dark:text-emerald-300/40 uppercase tracking-[0.2em] mb-1.5">Gender</p>
-                  <p className="text-slate-900 dark:text-slate-100 font-extrabold text-[16px]">{student.gender || 'N/A'}</p>
-                </div>
-                <div>
-                  <p className="text-[10px] font-black text-emerald-900/40 dark:text-emerald-300/40 uppercase tracking-[0.2em] mb-1.5">Current Age</p>
-                  <p className="text-slate-900 dark:text-slate-100 font-extrabold text-[16px]">{student.age ? `${student.age} YRS` : 'N/A'}</p>
-                </div>
-                <div className="col-span-2">
-                  <p className="text-[10px] font-black text-emerald-900/40 dark:text-emerald-300/40 uppercase tracking-[0.2em] mb-1.5">Origin Date</p>
-                  <p className="text-slate-900 dark:text-slate-100 font-extrabold text-[16px]">
-                    {student.dob ? new Date(student.dob).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A'}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Family Details Card */}
-            <div className="bg-white/40 dark:bg-slate-900/40 rounded-3xl p-6 border border-white/60 dark:border-slate-700/50 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-              <div className="flex items-center gap-3 text-blue-900/40 dark:text-blue-300/40 mb-4 border-b border-blue-100/50 dark:border-slate-700/50 pb-3">
-                <Users size={20} className="text-amber-500 dark:text-amber-400" />
-                <h3 className="text-xs font-bold uppercase tracking-widest text-blue-900/60 dark:text-blue-300/60">Family Background</h3>
-              </div>
-              <div className="space-y-4">
-                <div>
-                  <p className="text-[10px] font-extrabold text-blue-900/50 dark:text-blue-300/50 uppercase tracking-[0.2em] mb-1">Father's Name</p>
-                  <p className="text-slate-800 dark:text-slate-200 font-bold text-[15px]">{student.father_name || 'N/A'}</p>
-                </div>
-                <div>
-                  <p className="text-[10px] font-extrabold text-blue-900/50 dark:text-blue-300/50 uppercase tracking-[0.2em] mb-1">Mother's Name</p>
-                  <p className="text-slate-800 dark:text-slate-200 font-bold text-[15px]">{student.mother_name || 'N/A'}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Identity & Health Card */}
-            <div className="bg-white/40 dark:bg-slate-900/40 rounded-3xl p-6 border border-white/60 dark:border-slate-700/50 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-              <div className="flex items-center gap-3 text-blue-900/40 dark:text-blue-300/40 mb-4 border-b border-blue-100/50 dark:border-slate-700/50 pb-3">
-                <FileText size={20} className="text-rose-500 dark:text-rose-400" />
-                <h3 className="text-xs font-bold uppercase tracking-widest text-blue-900/60 dark:text-blue-300/60">Identity & Health</h3>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-[10px] font-extrabold text-blue-900/50 dark:text-blue-300/50 uppercase tracking-[0.2em] mb-1">Blood Group</p>
-                  <span className="px-2 py-0.5 rounded-md bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 text-xs font-bold border border-rose-100 dark:border-rose-500/20">
-                    {student.blood_group || 'Unknown'}
-                  </span>
-                </div>
-                <div>
-                  <p className="text-[10px] font-extrabold text-blue-900/50 dark:text-blue-300/50 uppercase tracking-[0.2em] mb-1">Aadhaar Number</p>
-                  <p className="text-slate-800 dark:text-slate-200 font-bold text-[15px]">{student.adhar_number || 'N/A'}</p>
-                </div>
-                <div className="bg-white/40 dark:bg-[#1e293b]/40 rounded-[2rem] p-8 border border-white/60 dark:border-slate-700/50 hover:shadow-[0_20px_40px_rgba(34,197,94,0.1)] transition-all duration-500 hover:-translate-y-1.5 backdrop-blur-md group col-span-1 md:col-span-1">
-                  <div className="flex items-center gap-3 text-emerald-900/40 dark:text-emerald-300/40 mb-6 border-b border-emerald-100/50 dark:border-slate-700/50 pb-4">
-                    <div className="p-2 bg-emerald-500/10 rounded-lg group-hover:bg-emerald-500/20 transition-colors">
-                      <CreditCard size={20} className="text-emerald-600 dark:text-emerald-400" />
-                    </div>
-                    <h3 className="text-xs font-black uppercase tracking-[0.2em] text-emerald-900/60 dark:text-emerald-300/60">Financial Status</h3>
-                  </div>
-                  <div className="space-y-4">
-                    <div>
-                      <p className="text-[10px] font-black text-emerald-900/40 dark:text-emerald-300/40 uppercase tracking-[0.2em] mb-1">Fee Balance</p>
-                      <p className="text-slate-900 dark:text-slate-100 font-black text-[20px] tracking-tight">₹{(student as any).fee_balance || 0}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                       <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest ${(student as any).fee_status === 'Paid' ? 'bg-emerald-500/10 text-emerald-600' : 'bg-rose-500/10 text-rose-600'}`}>
-                          {(student as any).fee_status || 'Pending'}
-                       </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Location & Address Card */}
-            <div className="bg-white/40 dark:bg-[#1e293b]/40 rounded-[2rem] p-8 border border-white/60 dark:border-slate-700/50 hover:shadow-[0_20px_40px_rgba(34,197,94,0.1)] transition-all duration-500 hover:-translate-y-1.5 backdrop-blur-md group col-span-1 md:col-span-2">
-              <div className="flex items-center gap-3 text-cyan-900/40 dark:text-cyan-300/40 mb-6 border-b border-cyan-100/50 dark:border-slate-700/50 pb-4">
-                <div className="p-2 bg-cyan-500/10 rounded-lg group-hover:bg-cyan-500/20 transition-colors">
-                  <Globe size={20} className="text-cyan-600 dark:text-cyan-400" />
-                </div>
-                <h3 className="text-xs font-black uppercase tracking-[0.2em] text-cyan-900/60 dark:text-cyan-300/60">Global Residency</h3>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div className="md:col-span-1">
-                  <p className="text-[10px] font-black text-cyan-900/40 dark:text-cyan-300/40 uppercase tracking-[0.2em] mb-1.5">Living Space</p>
-                  <p className="text-slate-900 dark:text-slate-100 font-extrabold leading-relaxed text-[16px] tracking-tight">{student.address}</p>
-                </div>
-                <div>
-                  <p className="text-[10px] font-black text-cyan-900/40 dark:text-cyan-300/40 uppercase tracking-[0.2em] mb-1.5">Jurisdiction</p>
-                  <p className="text-slate-900 dark:text-slate-100 font-extrabold text-[16px]">{student.district}, {student.state}</p>
-                </div>
-                <div>
-                  <p className="text-[10px] font-black text-cyan-900/40 dark:text-cyan-300/40 uppercase tracking-[0.2em] mb-1.5">Country Code</p>
-                  <p className="text-slate-900 dark:text-slate-100 font-extrabold text-[16px] flex items-center gap-2">
-                    <span className="px-2 py-0.5 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs border border-blue-500/20">{student.country || 'India'}</span>
-                    <span className="font-mono text-slate-400">{student.pincode}</span>
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Certificate Section */}
-          {student.certificate ? (
-             <div className="bg-gradient-to-r from-blue-50/60 to-cyan-50/60 dark:from-blue-900/10 dark:to-cyan-900/10 rounded-3xl p-6 border border-blue-100/60 dark:border-blue-500/20 shadow-[inset_0_2px_10px_rgba(255,255,255,0.2)]">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3 text-blue-700 dark:text-blue-400">
-                  <FileText size={20} />
-                  <h3 className="text-xs font-bold uppercase tracking-widest">Official Certificate</h3>
-                </div>
-              </div>
-              {!student.certificate.toLowerCase().endsWith('.pdf') ? (
-                <div 
-                  className="rounded-2xl overflow-hidden border-[3px] border-white/80 dark:border-blue-500/30 max-w-sm cursor-pointer shadow-lg hover:shadow-xl transition-all duration-300 group relative transform hover:-translate-y-1" 
-                  onClick={() => window.open(student.certificate, '_blank')}
-                  title="Click to view full size"
-                >
-                  <div className="absolute inset-0 bg-blue-900/0 group-hover:bg-blue-900/20 transition-colors z-10 flex items-center justify-center backdrop-blur-sm opacity-0 group-hover:opacity-100">
-                    <span className="bg-white/95 text-blue-700 px-5 py-2.5 rounded-xl font-bold text-sm shadow-sm transition-all transform translate-y-2 group-hover:translate-y-0">
-                      View Full Document
-                    </span>
-                  </div>
-                  <img src={student.certificate} alt="Certificate Thumbnail" className="w-full h-auto object-cover" />
-                </div>
-              ) : (
-                <a 
-                  href={student.certificate} 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="inline-flex items-center justify-center w-full sm:w-auto px-6 py-3 bg-white/80 dark:bg-slate-800 border-2 border-blue-100 dark:border-blue-500/30 rounded-xl text-blue-700 dark:text-blue-300 font-bold hover:bg-white dark:hover:bg-slate-700 transition-all shadow-sm hover:shadow-md gap-2"
-                >
-                  <FileText size={18} />
-                  View Uploaded Document
-                </a>
-              )}
-            </div>
-          ) : (
-            <div className="bg-white/30 dark:bg-slate-900/30 rounded-3xl p-8 border-2 border-slate-200/50 border-dashed dark:border-slate-700/50 text-center flex flex-col items-center">
-              <div className="w-14 h-14 rounded-full bg-slate-50/60 dark:bg-slate-800 flex items-center justify-center mb-4 text-slate-400/80 shadow-sm border border-white/60 dark:border-slate-700">
-                <FileText size={26} strokeWidth={1.5} />
-              </div>
-              <p className="text-slate-500 dark:text-slate-400 font-semibold text-sm max-w-xs leading-relaxed">No documentation has been attached to this record.</p>
-            </div>
-          )}
+    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
+      {/* Institutional Top Bar */}
+      <div className="bg-slate-50 dark:bg-slate-800/50 p-6 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
+        <button 
+          onClick={onClose}
+          className="flex items-center gap-2 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-navy-950 transition-all border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-lg group"
+        >
+          <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
+          Exit Record
+        </button>
+        <div className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-lg text-[9px] font-black uppercase tracking-[0.2em]">
+           <CheckCircle size={12} /> Registry Active
         </div>
       </div>
 
-      {showQR && (
-        <StudentQRCard 
-          student={student} 
-          onClose={() => setShowQR(false)} 
-        />
-      )}
+      <div className="p-10 space-y-12">
+        {/* Identity Section */}
+        <div className="flex flex-col md:flex-row gap-12 items-start">
+          <div className="relative">
+            <div className="w-48 h-48 bg-slate-50 dark:bg-slate-800 border-4 border-white dark:border-slate-700 rounded-lg shadow-md overflow-hidden flex items-center justify-center">
+              {student.image ? (
+                <img src={student.image} alt={student.name} className="w-full h-full object-cover" />
+              ) : (
+                <User size={64} className="text-slate-200" />
+              )}
+            </div>
+            <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 bg-navy-950 text-white rounded font-black text-[10px] uppercase tracking-widest shadow-lg border border-navy-800">
+              ID STU-{1000 + student.id}
+            </div>
+          </div>
+
+          <div className="flex-1 space-y-4">
+             <div>
+                <h1 className="text-4xl font-black text-slate-900 dark:text-white uppercase tracking-tight leading-none mb-2">{student.name}</h1>
+                <p className="text-[12px] font-black text-navy-600 dark:text-navy-400 uppercase tracking-[0.3em]">Institutional Personnel File</p>
+             </div>
+             
+             <div className="flex flex-wrap gap-4 pt-4">
+                <button 
+                  onClick={() => setShowQR(true)}
+                  className="flex items-center gap-2 px-6 py-3 bg-navy-950 text-white rounded-lg font-black text-[10px] uppercase tracking-[0.2em] shadow-lg shadow-navy-950/20 active:scale-95 transition-all border border-navy-800"
+                >
+                  <QrCode size={16} />
+                  Official ID Protocol
+                </button>
+                <div className="flex items-center gap-3 px-6 py-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 rounded-lg">
+                   <Clock size={16} className="text-slate-400" />
+                   <span className="text-[10px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest">Enrolled since 2024</span>
+                </div>
+             </div>
+          </div>
+        </div>
+
+        {/* Informational Matrix */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+           {/* Column 1: Communications */}
+           <div className="space-y-6">
+              <div className="flex items-center gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
+                 <ShieldCheck size={18} className="text-navy-600" />
+                 <h3 className="text-[11px] font-black text-slate-900 dark:text-white uppercase tracking-[0.2em]">Validated Contact</h3>
+              </div>
+              <div className="space-y-6 px-2">
+                 <div>
+                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Official Email</p>
+                    <p className="text-[13px] font-black text-slate-700 dark:text-slate-300 uppercase tracking-tight underline decoration-navy-100">{student.email || 'PROTOCOL_MISSING'}</p>
+                 </div>
+                 <div>
+                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Primary Contact</p>
+                    <p className="text-[13px] font-black text-slate-700 dark:text-slate-300 tracking-widest">{student.country_code || '+91'} {student.phone || '00000 00000'}</p>
+                 </div>
+              </div>
+           </div>
+
+           {/* Column 2: Personal Registry */}
+           <div className="space-y-6">
+              <div className="flex items-center gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
+                 <Calendar size={18} className="text-navy-600" />
+                 <h3 className="text-[11px] font-black text-slate-900 dark:text-white uppercase tracking-[0.2em]">Personnel Registry</h3>
+              </div>
+              <div className="grid grid-cols-2 gap-6 px-2">
+                 <div>
+                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Gender</p>
+                    <p className="text-[13px] font-black text-slate-700 dark:text-slate-300 uppercase">{student.gender || 'ND'}</p>
+                 </div>
+                 <div>
+                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Registry Age</p>
+                    <p className="text-[13px] font-black text-slate-700 dark:text-slate-300 uppercase">{student.age || '0'} YRS</p>
+                 </div>
+                 <div className="col-span-2">
+                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Commencement Date</p>
+                    <p className="text-[13px] font-black text-slate-700 dark:text-slate-300 uppercase">
+                      {student.dob ? new Date(student.dob).toLocaleDateString('en-GB', { day: '2-digit', month: 'LONG', year: 'numeric' }) : 'PROTOCOL_MISSING'}
+                    </p>
+                 </div>
+              </div>
+           </div>
+
+           {/* Column 3: Corporate/Parental */}
+           <div className="space-y-6">
+              <div className="flex items-center gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
+                 <Users size={18} className="text-navy-600" />
+                 <h3 className="text-[11px] font-black text-slate-900 dark:text-white uppercase tracking-[0.2em]">Guardian Mapping</h3>
+              </div>
+              <div className="space-y-6 px-2">
+                 <div>
+                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Inscribed Father</p>
+                    <p className="text-[13px] font-black text-slate-700 dark:text-slate-300 uppercase">{student.father_name || 'NOT_INSCRIBED'}</p>
+                 </div>
+                 <div>
+                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Inscribed Mother</p>
+                    <p className="text-[13px] font-black text-slate-700 dark:text-slate-300 uppercase">{student.mother_name || 'NOT_INSCRIBED'}</p>
+                 </div>
+              </div>
+           </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+           {/* Section: Secondary Identity */}
+           <div className="p-8 bg-slate-50 dark:bg-slate-800/30 rounded-xl border border-slate-200 dark:border-slate-800">
+              <div className="flex items-center gap-3 mb-8 border-b border-slate-200 dark:border-slate-700 pb-4">
+                 <CreditCard size={18} className="text-navy-600" />
+                 <h3 className="text-[11px] font-black text-slate-900 dark:text-white uppercase tracking-[0.2em]">Institutional Credentials</h3>
+              </div>
+              <div className="grid grid-cols-2 gap-8">
+                 <div>
+                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Blood Analysis</p>
+                    <span className="px-3 py-1 bg-white border border-rose-100 text-rose-600 rounded text-[11px] font-black uppercase shadow-sm">
+                       {student.blood_group || 'UNKNOWN'}
+                    </span>
+                 </div>
+                 <div>
+                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Aadhaar UID</p>
+                    <p className="text-[14px] font-black text-slate-700 dark:text-slate-300 tracking-[0.2em]">{student.adhar_number || 'PROTOCOL_MISSING'}</p>
+                 </div>
+              </div>
+           </div>
+
+           {/* Section: Geolocation */}
+           <div className="p-8 bg-slate-50 dark:bg-slate-800/30 rounded-xl border border-slate-200 dark:border-slate-800">
+              <div className="flex items-center gap-3 mb-8 border-b border-slate-200 dark:border-slate-700 pb-4">
+                 <Globe size={18} className="text-navy-600" />
+                 <h3 className="text-[11px] font-black text-slate-900 dark:text-white uppercase tracking-[0.2em]">Geographic Domicile</h3>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                 <div className="md:col-span-2">
+                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Verified Address</p>
+                    <p className="text-[13px] font-black text-slate-700 dark:text-slate-300 uppercase leading-relaxed">{student.address}</p>
+                 </div>
+                 <div>
+                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Region/Jurisdiction</p>
+                    <p className="text-[11px] font-black text-slate-700 dark:text-slate-200 uppercase">{student.district}, {student.state}</p>
+                 </div>
+                 <div>
+                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Postal Auth</p>
+                    <p className="text-[11px] font-black text-navy-600 border-b border-navy-100 pb-1 inline-block">{student.pincode}</p>
+                 </div>
+              </div>
+           </div>
+        </div>
+
+        {/* Supporting Documents Section */}
+        <div className="pt-8 border-t border-slate-100 dark:border-slate-800">
+          <div className="flex items-center gap-3 mb-6">
+             <FileText size={18} className="text-navy-600" />
+             <h3 className="text-[11px] font-black text-slate-900 dark:text-white uppercase tracking-[0.2em]">Institutional Documentation</h3>
+          </div>
+          
+          {student.certificate ? (
+             <div className="p-10 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl flex flex-col items-center">
+                <div 
+                  className="relative group cursor-pointer max-w-md w-full"
+                  onClick={() => window.open(student.certificate, '_blank')}
+                >
+                   {!student.certificate.toLowerCase().endsWith('.pdf') ? (
+                     <>
+                        <img src={student.certificate} alt="Certificate Path" className="w-full h-auto rounded-lg border-8 border-white dark:border-slate-800 shadow-xl" />
+                        <div className="absolute inset-0 bg-navy-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm rounded-lg">
+                           <span className="px-6 py-3 bg-white text-navy-950 font-black text-[10px] uppercase tracking-widest rounded shadow-2xl">Examine Full Document</span>
+                        </div>
+                     </>
+                   ) : (
+                     <div className="w-full py-20 bg-slate-50 border border-slate-200 rounded-xl flex flex-col items-center gap-6">
+                        <FileText size={64} className="text-slate-300" />
+                        <span className="px-8 py-4 bg-navy-950 text-white font-black text-[11px] uppercase tracking-widest rounded shadow-xl">Open Secured PDF Repository</span>
+                     </div>
+                   )}
+                </div>
+             </div>
+          ) : (
+             <div className="p-16 border-2 border-dashed border-slate-100 dark:border-slate-800 rounded-xl text-center space-y-4">
+                <FileText size={48} className="mx-auto text-slate-200" />
+                <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest leading-relaxed">No additional bureaucratic documentation has been appended to this record.</p>
+             </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };

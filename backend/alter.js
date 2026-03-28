@@ -61,6 +61,19 @@ async function alterTable() {
         marked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         UNIQUE (student_id, date)
       );
+
+      CREATE TABLE IF NOT EXISTS exams (
+        id SERIAL PRIMARY KEY,
+        exam_name VARCHAR(200) NOT NULL,
+        course_id INTEGER REFERENCES courses(id) ON DELETE CASCADE,
+        exam_date DATE NOT NULL,
+        start_time TIME NOT NULL,
+        end_time TIME NOT NULL,
+        room_number VARCHAR(50),
+        total_marks INTEGER DEFAULT 100,
+        description TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
     `);
     console.log("Table altered successfully:", res);
     process.exit(0);
