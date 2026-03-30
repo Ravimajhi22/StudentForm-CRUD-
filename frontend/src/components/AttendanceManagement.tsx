@@ -5,6 +5,8 @@ import {
     ShieldCheck,
     FileText
 } from 'lucide-react';
+import { API_URL } from '../apiConfig';
+
 import { Html5QrcodeScanner } from 'html5-qrcode';
 import { QRCodeSVG } from 'qrcode.react';
 
@@ -62,7 +64,8 @@ const AttendanceManagement: React.FC = () => {
 
     const markAttendance = async (studentId: number, status: 'Present' | 'Absent') => {
         try {
-            await fetch('http://localhost:5000/api/attendance/mark', {
+            await fetch(`${API_URL}/api/attendance/mark`, {
+
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ student_id: studentId, status, date: selectedDate })
@@ -75,7 +78,8 @@ const AttendanceManagement: React.FC = () => {
 
     const fetchStudents = async () => {
         try {
-            const res = await fetch('http://localhost:5000/api/students');
+            const res = await fetch(`${API_URL}/api/students`);
+
             const data = await res.json();
             setStudents(data);
             
@@ -92,7 +96,8 @@ const AttendanceManagement: React.FC = () => {
 
     const fetchAttendance = async () => {
         try {
-            const res = await fetch(`http://localhost:5000/api/attendance/list?date=${selectedDate}`);
+            const res = await fetch(`${API_URL}/api/attendance/list?date=${selectedDate}`);
+
             const data = await res.json();
             
             // If attendance exists for the date, update marking list
@@ -121,7 +126,8 @@ const AttendanceManagement: React.FC = () => {
         }));
 
         try {
-            const res = await fetch('http://localhost:5000/api/attendance/bulk', {
+            const res = await fetch(`${API_URL}/api/attendance/bulk`, {
+
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ attendanceData })

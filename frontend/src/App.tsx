@@ -14,6 +14,8 @@ import AttendanceManagement from './components/AttendanceManagement';
 import Exams from './components/Exams';
 import ChatBot from './components/ChatBot';
 import type { Student } from './types';
+import { API_URL } from './apiConfig';
+
 
 function App() {
   const [students, setStudents] = useState<Student[]>([]);
@@ -65,7 +67,8 @@ function App() {
 
   const fetchAttendanceSummary = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/attendance/summary");
+      const res = await fetch(`${API_URL}/api/attendance/summary`);
+
       const data = await res.json();
       setAttendanceSummary(data);
     } catch (err) {
@@ -75,7 +78,8 @@ function App() {
 
   const fetchStudents = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/students");
+      const res = await fetch(`${API_URL}/api/students`);
+
       const data = await res.json();
       setStudents(data);
     } catch (err) {
@@ -91,7 +95,8 @@ function App() {
   const handleDelete = async (id: number) => {
     if (confirm('Permanently delete this student record?')) {
       try {
-        await fetch(`http://localhost:5000/api/students/${id}`, {
+        await fetch(`${API_URL}/api/students/${id}`, {
+
           method: "DELETE",
         });
         setStudents(prev => prev.filter(s => s.id !== id));
@@ -119,14 +124,16 @@ function App() {
       });
 
       if (savedData.id) {
-        const res = await fetch(`http://localhost:5000/api/students/${savedData.id}`, {
+        const res = await fetch(`${API_URL}/api/students/${savedData.id}`, {
+
           method: "PUT",
           body: formData,
         });
         const updatedStudent = await res.json();
         setStudents(prev => prev.map(s => (s.id === updatedStudent.id ? updatedStudent : s)));
       } else {
-        const res = await fetch("http://localhost:5000/api/students", {
+        const res = await fetch(`${API_URL}/api/students`, {
+
           method: "POST",
           body: formData,
         });

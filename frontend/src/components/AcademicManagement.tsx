@@ -15,6 +15,8 @@ import {
     FolderKanban,
     Settings
 } from 'lucide-react';
+import { API_URL } from '../apiConfig';
+
 import { standardBranches } from '../data/standardBranches';
 
 interface Branch {
@@ -65,11 +67,12 @@ const AcademicManagement: React.FC = () => {
 
     const fetchData = async () => {
         try {
-            const bRes = await fetch('http://localhost:5000/api/academic/branches');
+            const bRes = await fetch(`${API_URL}/api/academic/branches`);
+
             const bData = await bRes.json();
             setBranches(bData);
 
-            const cRes = await fetch('http://localhost:5000/api/academic/all');
+            const cRes = await fetch(`${API_URL}/api/academic/all`);
             const cData = await cRes.json();
             setCourses(cData);
         } catch (err) {
@@ -79,7 +82,8 @@ const AcademicManagement: React.FC = () => {
 
     const handleAddBranch = async (name: string) => {
         try {
-            const res = await fetch('http://localhost:5000/api/academic/branches', {
+            const res = await fetch(`${API_URL}/api/academic/branches`, {
+
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name })
@@ -122,7 +126,8 @@ const AcademicManagement: React.FC = () => {
         }
 
         try {
-            const res = await fetch('http://localhost:5000/api/academic', {
+            const res = await fetch(`${API_URL}/api/academic`, {
+
                 method: 'POST',
                 body: formData
             });
@@ -140,7 +145,8 @@ const AcademicManagement: React.FC = () => {
     const handleDeleteBranch = async (id: number) => {
         if (!confirm('Deleting a branch will delete all its courses. Continue?')) return;
         try {
-            await fetch(`http://localhost:5000/api/academic/branches/${id}`, { method: 'DELETE' });
+            await fetch(`${API_URL}/api/academic/branches/${id}`, { method: 'DELETE' });
+
             if (selectedBranch === id) setSelectedBranch(null);
             fetchData();
         } catch (err) {
@@ -151,7 +157,8 @@ const AcademicManagement: React.FC = () => {
     const handleDeleteCourse = async (id: number) => {
         if (!confirm('Are you sure you want to delete this course?')) return;
         try {
-            await fetch(`http://localhost:5000/api/academic/${id}`, { method: 'DELETE' });
+            await fetch(`${API_URL}/api/academic/${id}`, { method: 'DELETE' });
+
             fetchData();
         } catch (err) {
             console.error(err);
@@ -292,7 +299,8 @@ const AcademicManagement: React.FC = () => {
                                 <div className="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
                                     {course.syllabus_pdf ? (
                                         <a 
-                                            href={`http://localhost:5000/uploads/syllabuses/${course.syllabus_pdf}`}
+                                            href={`${API_URL}/uploads/syllabuses/${course.syllabus_pdf}`}
+
                                             target="_blank"
                                             rel="noreferrer"
                                             className="flex items-center gap-2 px-4 py-2 bg-navy-50 hover:bg-navy-950 text-navy-700 hover:text-white border border-navy-100 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all"

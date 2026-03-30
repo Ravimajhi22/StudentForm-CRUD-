@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Plus, Trash2, User, CheckCircle, ChevronDown, CreditCard, X, Receipt, Search } from 'lucide-react';
+import { API_URL } from '../apiConfig';
+
 
 interface FeeStructure {
     id: number;
@@ -62,7 +64,8 @@ const FeeManagement: React.FC<FeeManagementProps> = ({ onUpdate }) => {
 
     const fetchFees = async () => {
         try {
-            const res = await fetch('http://localhost:5000/api/fees/structure');
+            const res = await fetch(`${API_URL}/api/fees/structure`);
+
             const data = await res.json();
             setFees(data);
         } catch (err) {
@@ -72,7 +75,8 @@ const FeeManagement: React.FC<FeeManagementProps> = ({ onUpdate }) => {
 
     const fetchStudents = async () => {
         try {
-            const res = await fetch('http://localhost:5000/api/students');
+            const res = await fetch(`${API_URL}/api/students`);
+
             const data = await res.json();
             setStudents(data);
         } catch (err) {
@@ -83,7 +87,8 @@ const FeeManagement: React.FC<FeeManagementProps> = ({ onUpdate }) => {
     const handleAddFee = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const res = await fetch('http://localhost:5000/api/fees/structure', {
+            const res = await fetch(`${API_URL}/api/fees/structure`, {
+
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newFee)
@@ -103,7 +108,8 @@ const FeeManagement: React.FC<FeeManagementProps> = ({ onUpdate }) => {
         if (!selectedStudent || !assignment.custom_amount) return;
 
         try {
-            const res = await fetch(`http://localhost:5000/api/fees/assign/${selectedStudent}`, {
+            const res = await fetch(`${API_URL}/api/fees/assign/${selectedStudent}`, {
+
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ amount: assignment.custom_amount })
@@ -123,7 +129,8 @@ const FeeManagement: React.FC<FeeManagementProps> = ({ onUpdate }) => {
     const handleDeleteFee = async (id: number) => {
         if (!confirm('Are you sure you want to delete this fee structure?')) return;
         try {
-            await fetch(`http://localhost:5000/api/fees/structure/${id}`, { method: 'DELETE' });
+            await fetch(`${API_URL}/api/fees/structure/${id}`, { method: 'DELETE' });
+
             fetchFees();
         } catch (err) {
             console.error(err);

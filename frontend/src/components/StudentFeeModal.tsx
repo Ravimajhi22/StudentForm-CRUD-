@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { X, DollarSign, Receipt, AlertCircle, CheckCircle, ShieldCheck, User, TrendingUp } from 'lucide-react';
 import type { Student } from '../types';
+import { API_URL } from '../apiConfig';
+
 
 interface StudentFeeModalProps {
     student: Student;
@@ -23,7 +25,8 @@ const StudentFeeModal: React.FC<StudentFeeModalProps> = ({ student, onClose, onU
 
     const fetchStudentFees = async () => {
         try {
-            const res = await fetch(`http://localhost:5000/api/fees/student/${student.id}`);
+            const res = await fetch(`${API_URL}/api/fees/student/${student.id}`);
+
             const data = await res.json();
             setFeeData(data);
         } catch (err) {
@@ -36,7 +39,8 @@ const StudentFeeModal: React.FC<StudentFeeModalProps> = ({ student, onClose, onU
         setIsSubmitting(true);
         try {
             const newPaid = feeData.paid_amount + parseFloat(paymentAmount);
-            const res = await fetch(`http://localhost:5000/api/fees/student/${student.id}`, {
+            const res = await fetch(`${API_URL}/api/fees/student/${student.id}`, {
+
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -58,7 +62,8 @@ const StudentFeeModal: React.FC<StudentFeeModalProps> = ({ student, onClose, onU
 
     const handleSetTotal = async (amount: number) => {
         try {
-            await fetch(`http://localhost:5000/api/fees/student/${student.id}`, {
+            await fetch(`${API_URL}/api/fees/student/${student.id}`, {
+
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

@@ -5,6 +5,8 @@ import {
   CheckCircle2, Trophy, ArrowRight, RefreshCw, Sparkles
 } from 'lucide-react';
 import type { Exam, Course } from '../types';
+import { API_URL } from '../apiConfig';
+
 
 interface Question {
   id: number;
@@ -63,7 +65,8 @@ const Exams: React.FC = () => {
 
     const fetchExams = async () => {
         try {
-            const res = await fetch('http://localhost:5000/api/exams');
+            const res = await fetch(`${API_URL}/api/exams`);
+
             const data = await res.json();
             setExams(data);
         } catch (err) {
@@ -73,7 +76,8 @@ const Exams: React.FC = () => {
 
     const fetchCourses = async () => {
         try {
-            const res = await fetch('http://localhost:5000/api/academic/all');
+            const res = await fetch(`${API_URL}/api/academic/all`);
+
             const data = await res.json();
             setCourses(data);
         } catch (err) {
@@ -140,8 +144,9 @@ const Exams: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const url = editingExam 
-            ? `http://localhost:5000/api/exams/${editingExam.id}` 
-            : 'http://localhost:5000/api/exams';
+            ? `${API_URL}/api/exams/${editingExam.id}` 
+            : `${API_URL}/api/exams`;
+
         const method = editingExam ? 'PUT' : 'POST';
 
         try {
@@ -166,7 +171,8 @@ const Exams: React.FC = () => {
     const handleDelete = async (id: number) => {
         if (!confirm('Are you sure you want to delete this exam schedule?')) return;
         try {
-            await fetch(`http://localhost:5000/api/exams/${id}`, { method: 'DELETE' });
+            await fetch(`${API_URL}/api/exams/${id}`, { method: 'DELETE' });
+
             fetchExams();
         } catch (err) {
             console.error(err);
