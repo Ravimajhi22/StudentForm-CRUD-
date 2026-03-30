@@ -2,14 +2,21 @@ require('dotenv').config();
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
+const helmet = require("helmet");
 
 const studentRoutes = require("./routes/studentRoutes");
 const feeRoutes = require("./routes/feeRoutes");
 const courseRoutes = require("./routes/courseRoutes");
 const attendanceRoutes = require("./routes/attendanceRoutes");
 const examRoutes = require("./routes/examRoutes");
+const commentRoutes = require("./routes/commentRoutes");
 
 const app = express();
+
+// Security - Base Helmet
+app.use(helmet({
+  crossOriginResourcePolicy: false, // Required for displaying local/cloud images
+}));
 
 // Middleware
 const allowedOrigin = process.env.ALLOWED_ORIGIN || "http://localhost:5173";
@@ -31,6 +38,7 @@ app.use("/api/fees", feeRoutes);
 app.use("/api/academic", courseRoutes);
 app.use("/api/attendance", attendanceRoutes);
 app.use("/api/exams", examRoutes);
+app.use("/api/comments", commentRoutes);
 
 // Server
 const PORT = process.env.PORT || 5000;

@@ -1,11 +1,13 @@
 const studentModel = require("../models/studentModel");
 
+const BASE_URL = process.env.BASE_URL || "http://localhost:5000";
+
 const formatStudent = (student) => {
   if (!student) return student;
   return {
     ...student,
-    image: student.image && !student.image.startsWith('http') && !student.image.startsWith('data:') ? `http://localhost:5000/uploads/${student.image}` : student.image,
-    certificate: student.certificate && !student.certificate.startsWith('http') && !student.certificate.startsWith('data:') ? `http://localhost:5000/uploads/${student.certificate}` : student.certificate,
+    image: student.image && !student.image.startsWith('http') && !student.image.startsWith('data:') ? `${BASE_URL}/uploads/${student.image}` : student.image,
+    certificate: student.certificate && !student.certificate.startsWith('http') && !student.certificate.startsWith('data:') ? `${BASE_URL}/uploads/${student.certificate}` : student.certificate,
   };
 };
 

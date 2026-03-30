@@ -1,4 +1,3 @@
-import React from 'react';
 import { 
   LayoutDashboard, 
   Users, 
@@ -6,12 +5,13 @@ import {
   GraduationCap,
   ClipboardCheck,
   ShieldCheck,
-  BookOpen
+  BookOpen,
+  MessageSquare
 } from 'lucide-react';
 
 interface SidebarProps {
-  activeView: 'dashboard' | 'students' | 'fees' | 'academic' | 'attendance' | 'exams';
-  onViewChange: (view: 'dashboard' | 'students' | 'fees' | 'academic' | 'attendance' | 'exams') => void;
+  activeView: 'dashboard' | 'students' | 'fees' | 'academic' | 'attendance' | 'exams' | 'comments';
+  onViewChange: (view: 'dashboard' | 'students' | 'fees' | 'academic' | 'attendance' | 'exams' | 'comments') => void;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ 
@@ -25,6 +25,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     { id: 'academic', label: 'Academic Branch', icon: GraduationCap },
     { id: 'attendance', label: 'Attendance Registry', icon: ClipboardCheck },
     { id: 'exams', label: 'Examination Cell', icon: ShieldCheck },
+    { id: 'comments', label: 'Neon Feedback', icon: MessageSquare },
   ] as const;
 
   return (
