@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Camera, Upload, Search, ChevronDown, User, Mail, Phone, Calendar, MapPin, CreditCard, Shield } from 'lucide-react';
+import { X, Camera, Upload, ChevronDown, User, Mail, Phone, MapPin, Shield } from 'lucide-react';
 import type { Student } from '../types';
 
 import { LOCATIONS } from '../data/locations';
@@ -22,7 +22,6 @@ const StudentModal: React.FC<StudentModalProps> = ({ student, onClose, onSave })
     father_name: '',
     mother_name: '',
     blood_group: '',
-    adhar_number: '',
     country_code: '+91',
     country: '', 
     address: '',
@@ -31,15 +30,10 @@ const StudentModal: React.FC<StudentModalProps> = ({ student, onClose, onSave })
     pincode: '',
     image: '',
     certificate: '',
-    branch_id: '',
-    course_id: '',
   });
 
-  const [branches, setBranches] = useState<any[]>([]);
-  const [filteredCourses, setFilteredCourses] = useState<any[]>([]);
 
   const [isCodeDropdownOpen, setIsCodeDropdownOpen] = useState(false);
-  const [codeSearch, setCodeSearch] = useState('');
 
   const [imagePreview, setImagePreview] = useState<string>('');
   const [availableStates, setAvailableStates] = useState<string[]>([]);
@@ -61,7 +55,6 @@ const StudentModal: React.FC<StudentModalProps> = ({ student, onClose, onSave })
         father_name: student.father_name || '',
         mother_name: student.mother_name || '',
         blood_group: student.blood_group || '',
-        adhar_number: student.adhar_number || '',
         country_code: student.country_code || '+91',
         country: student.country || '',
         address: student.address || '',
@@ -70,37 +63,11 @@ const StudentModal: React.FC<StudentModalProps> = ({ student, onClose, onSave })
         pincode: student.pincode || '',
         image: student.image || '',
         certificate: student.certificate || '',
-        branch_id: student.branch_id || '',
-        course_id: student.course_id || '',
       });
       setImagePreview(student.image || '');
-      if (student.branch_id) fetchCourses(student.branch_id);
     }
   }, [student]);
 
-  useEffect(() => {
-    fetchBranches();
-  }, []);
-
-  const fetchBranches = async () => {
-    try {
-      const res = await fetch('http://localhost:5000/api/academic/branches');
-      const data = await res.json();
-      setBranches(data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const fetchCourses = async (branchId: number) => {
-    try {
-      const res = await fetch(`http://localhost:5000/api/academic/branch/${branchId}`);
-      const data = await res.json();
-      setFilteredCourses(data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
 
   useEffect(() => {
     if (formData.country) {
@@ -168,24 +135,12 @@ const StudentModal: React.FC<StudentModalProps> = ({ student, onClose, onSave })
       setFormData((prev: any) => ({ ...prev, [name]: numericValue }));
       return;
     }
-    if (name === 'adhar_number') {
-      const numericValue = value.replace(/\D/g, '').slice(0, 12);
-      setFormData((prev: any) => ({ ...prev, [name]: numericValue }));
-      return;
-    }
     if (name === 'dob') {
       const dobDate = new Date(value);
       const today = new Date();
       let calAge = today.getFullYear() - dobDate.getFullYear();
       if (today.getMonth() < dobDate.getMonth() || (today.getMonth() === dobDate.getMonth() && today.getDate() < dobDate.getDate())) calAge--;
       setFormData((prev: any) => ({ ...prev, dob: value, age: calAge >= 0 ? calAge.toString() : '' }));
-      return;
-    }
-    if (name === 'branch_id') {
-      const bId = value;
-      setFormData((prev: any) => ({ ...prev, branch_id: bId, course_id: '' }));
-      if (bId) fetchCourses(parseInt(bId));
-      else setFilteredCourses([]);
       return;
     }
     setFormData((prev: any) => ({ ...prev, [name]: value }));
@@ -274,35 +229,19 @@ const StudentModal: React.FC<StudentModalProps> = ({ student, onClose, onSave })
                     </div>
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label className="label-formal">Age</label>
-                          <input required type="number" name="age" value={formData.age} onChange={handleChange} className="input-formal w-full px-4 py-2.5 text-[12px] font-bold" readOnly />
-                        </div>
-                        <div>
-                          <label className="label-formal">Gender</label>
-                          <select required name="gender" value={formData.gender} onChange={handleChange} className="input-formal w-full px-4 py-2.5 text-[12px] font-bold appearance-none">
-                            <option value="" disabled>Select</option>
-                            <option value="Male">Male</option>
-                            <option value="Female">Female</option>
-                            <option value="Other">Other</option>
-                          </select>
-                        </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="label-formal">Age</label>
+                      <input required type="number" name="age" value={formData.age} onChange={handleChange} className="input-formal w-full px-4 py-2.5 text-[12px] font-bold" readOnly />
                     </div>
                     <div>
-                       <label className="label-formal">Branch Mapping</label>
-                       <select required name="branch_id" value={formData.branch_id} onChange={handleChange} className="input-formal w-full px-4 py-2.5 text-[12px] font-bold appearance-none">
-                         <option value="">Branch...</option>
-                         {branches.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
-                       </select>
-                    </div>
-                    <div>
-                       <label className="label-formal">Assigned Course</label>
-                       <select required name="course_id" value={formData.course_id} onChange={handleChange} disabled={!formData.branch_id} className="input-formal w-full px-4 py-2.5 text-[12px] font-bold appearance-none disabled:bg-slate-50">
-                         <option value="">Course...</option>
-                         {filteredCourses.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                       </select>
+                      <label className="label-formal">Gender</label>
+                      <select required name="gender" value={formData.gender} onChange={handleChange} className="input-formal w-full px-4 py-2.5 text-[12px] font-bold appearance-none">
+                        <option value="" disabled>Select</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                      </select>
                     </div>
                   </div>
               </div>
@@ -339,14 +278,7 @@ const StudentModal: React.FC<StudentModalProps> = ({ student, onClose, onSave })
                     </div>
                   </div>
                </div>
-               <div>
-                  <label className="label-formal">National Identity (UID)</label>
-                  <div className="relative">
-                    <CreditCard className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
-                    <input type="text" name="adhar_number" value={formData.adhar_number} onChange={handleChange} maxLength={12} className="input-formal w-full pl-10 pr-4 py-2.5 text-[12px] font-bold" placeholder="xxxx-xxxx-xxxx" />
-                  </div>
-               </div>
-            </div>
+             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                <div>

@@ -1,5 +1,8 @@
-import React from 'react';
-import { Edit2, Trash2, Users, Printer, FileText, Eye, DollarSign } from 'lucide-react';
+import React, { useState } from 'react';
+import { Edit2, Trash2, Users, Printer, FileText, Eye, DollarSign, Download, FileJson as FileExcel, FileText as FilePdf, ChevronDown } from 'lucide-react';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import * as XLSX from 'xlsx';
 import type { Student } from '../types';
 
 interface StudentListProps {
@@ -11,6 +14,90 @@ interface StudentListProps {
 }
 
 const StudentList: React.FC<StudentListProps> = ({ students, onEdit, onDelete, onView, onManageFees }) => {
+  const [isExportOpen, setIsExportOpen] = useState(false);
+
+  const exportToPDF = () => {
+    const doc = new jsPDF();
+    
+    // Add Academic Institution Header
+    doc.setFontSize(22);
+    doc.setTextColor(49, 46, 129); // navy-900 (Indigo)
+    doc.text('INSTITUTIONAL PERSONNEL REGISTRY', 105, 20, { align: 'center' });
+    
+    doc.setFontSize(10);
+    doc.setTextColor(100, 116, 139); // slate-500
+    doc.text(`Generated on: ${new Date().toLocaleString()}`, 105, 28, { align: 'center' });
+    doc.text('OFFICIAL RECORD - CONFIDENTIAL', 105, 34, { align: 'center' });
+
+    const tableData = students.map(s => [
+      `STU-100${s.id}`,
+      s.name.toUpperCase(),
+      s.email || 'N/A',
+      s.phone || 'N/A',
+      `${s.district}, ${s.state}`,
+      (s as any).fee_status || 'Pending',
+      `INR ${(s as any).fee_balance || 0}`
+    ]);
+
+    autoTable(doc, {
+      startY: 45,
+      head: [['REF ID', 'FULL NAME', 'EMAIL', 'CONTACT', 'LOCATION', 'FISCAL STATUS', 'BALANCE']],
+      body: tableData,
+      theme: 'grid',
+      headStyles: { 
+        fillColor: [30, 27, 75], // navy-950 (Indigo)
+        textColor: [255, 255, 255],
+        fontSize: 8,
+        fontStyle: 'bold',
+        halign: 'center'
+      },
+      bodyStyles: { 
+        fontSize: 7,
+        textColor: [51, 65, 85], // slate-700
+      },
+      alternateRowStyles: {
+        fillColor: [248, 250, 252] // slate-50
+      },
+      margin: { top: 45 },
+      styles: { overflow: 'linebreak', cellPadding: 3 },
+      columnStyles: {
+        0: { cellWidth: 20 },
+        1: { cellWidth: 40 },
+        2: { cellWidth: 40 },
+        5: { halign: 'center' },
+        6: { halign: 'right' }
+      }
+    });
+
+    doc.save(`student_registry_${new Date().getTime()}.pdf`);
+    setIsExportOpen(false);
+  };
+
+  const exportToExcel = () => {
+    const worksheetData = students.map(s => ({
+      'Record ID': `STU-100${s.id}`,
+      'Full Name': s.name,
+      'Email Address': s.email || 'N/A',
+      'Phone Number': s.phone || 'N/A',
+      'Mailing Address': s.address || 'N/A',
+      'District': s.district || 'N/A',
+      'State': s.state || 'N/A',
+      'Pincode': s.pincode || 'N/A',
+      'Fee Status': (s as any).fee_status || 'Pending',
+      'Outstanding Balance': (s as any).fee_balance || 0
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Students');
+    
+    // Auto-size columns
+    worksheet['!cols'] = [{ wch: 15 }, { wch: 25 }, { wch: 30 }, { wch: 15 }, { wch: 40 }, { wch: 15 }, { wch: 15 }, { wch: 10 }, { wch: 15 }, { wch: 20 }];
+
+    XLSX.writeFile(workbook, `student_registry_${new Date().getTime()}.xlsx`);
+    setIsExportOpen(false);
+  };
+
   if (students.length === 0) {
     return (
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-16 text-center shadow-sm">
@@ -36,13 +123,13 @@ const StudentList: React.FC<StudentListProps> = ({ students, onEdit, onDelete, o
           <title>Institutional Record - ${student.name}</title>
           <style>
             body { font-family: 'Inter', system-ui, sans-serif; padding: 40px; color: #1e293b; line-height: 1.5; background: #fff; margin: 0; }
-            .print-container { max-width: 800px; margin: 0 auto; border: 2px solid #1e3a8a; padding: 40px; }
+            .print-container { max-width: 800px; margin: 0 auto; border: 2px solid #4f46e5; padding: 40px; }
             .header { display: flex; align-items: center; gap: 30px; border-bottom: 2px solid #e2e8f0; padding-bottom: 30px; margin-bottom: 30px; }
-            .pic { width: 120px; height: 120px; border: 1px solid #1e3a8a; object-fit: cover; }
-            .name-box h1 { margin: 0; color: #1e3a8a; font-size: 28px; text-transform: uppercase; }
+            .pic { width: 120px; height: 120px; border: 1px solid #4f46e5; object-fit: cover; }
+            .name-box h1 { margin: 0; color: #4f46e5; font-size: 28px; text-transform: uppercase; }
             .uid { font-weight: 800; color: #64748b; font-family: monospace; border: 1px solid #cbd5e1; padding: 4px 8px; display: inline-block; margin-top: 10px; }
             .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
-            .label { font-size: 11px; font-weight: 900; color: #1e3a8a; text-transform: uppercase; margin-bottom: 5px; border-bottom: 1px solid #e2e8f0; }
+            .label { font-size: 11px; font-weight: 900; color: #4f46e5; text-transform: uppercase; margin-bottom: 5px; border-bottom: 1px solid #e2e8f0; }
             .value { font-size: 14px; font-weight: 600; margin-bottom: 20px; }
             .footer { margin-top: 60px; border-top: 2px solid #e2e8f0; padding-top: 10px; font-size: 10px; text-align: center; color: #94a3b8; }
           </style>
@@ -50,7 +137,7 @@ const StudentList: React.FC<StudentListProps> = ({ students, onEdit, onDelete, o
         <body>
           <div class="print-container">
             <div class="header">
-              ${student.image ? `<img src="${student.image}" class="pic" />` : `<div style="width:120px;height:120px;border:1px solid #1e3a8a;display:flex;align-items:center;justify-content:center;font-size:48px;font-weight:900;color:#1e3a8a;">${student.name.charAt(0)}</div>`}
+              ${student.image ? `<img src="${student.image}" class="pic" />` : `<div style="width:120px;height:120px;border:1px solid #4f46e5;display:flex;align-items:center;justify-content:center;font-size:48px;font-weight:900;color:#4f46e5;">${student.name.charAt(0)}</div>`}
               <div class="name-box">
                 <h1>${student.name}</h1>
                 <div class="uid">RECORD ID: STU-100${student.id}</div>
@@ -67,8 +154,6 @@ const StudentList: React.FC<StudentListProps> = ({ students, onEdit, onDelete, o
               <div>
                 <div class="label">Academic Location</div>
                 <div class="value">${student.district}, ${student.state}</div>
-                <div class="label">Official Identity (Aadhaar)</div>
-                <div class="value">${student.adhar_number || 'NOT PROVIDED'}</div>
               </div>
             </div>
             <div class="footer">INSTITUTIONAL ERP • OFFICIAL STUDENT TRANSCRIPT • GENERATED ON ${new Date().toLocaleDateString()}</div>
@@ -81,7 +166,52 @@ const StudentList: React.FC<StudentListProps> = ({ students, onEdit, onDelete, o
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-sm">
+    <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      {/* Table Actions / Export Header */}
+      <div className="flex justify-between items-end mb-2">
+        <div>
+          <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest flex items-center gap-2">
+            <Users size={16} className="text-navy-600" />
+            Active Records Registry
+          </h3>
+          <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter mt-0.5">Total Synchronized Entries: {students.length}</p>
+        </div>
+
+        <div className="relative">
+          <button 
+            onClick={() => setIsExportOpen(!isExportOpen)}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-[10px] font-black text-slate-700 dark:text-slate-300 uppercase tracking-widest hover:border-navy-500 transition-all shadow-sm group"
+          >
+            <Download size={12} className="group-hover:translate-y-0.5 transition-transform" />
+            <span>Export Registry</span>
+            <ChevronDown size={10} className={`transition-transform duration-300 ${isExportOpen ? 'rotate-180' : ''}`} />
+          </button>
+
+          {isExportOpen && (
+            <>
+              <div className="fixed inset-0 z-10" onClick={() => setIsExportOpen(false)}></div>
+              <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-2xl z-20 py-2 animate-in fade-in zoom-in-95 duration-200">
+                <button 
+                  onClick={exportToPDF}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-[10px] font-black text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-navy-600 uppercase tracking-widest transition-colors"
+                >
+                  <FilePdf size={14} className="text-rose-500" />
+                  Download PDF
+                </button>
+                <button 
+                  onClick={exportToExcel}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-[10px] font-black text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-emerald-600 uppercase tracking-widest transition-colors"
+                >
+                  <FileExcel size={14} className="text-emerald-500" />
+                  Download Excel
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-sm">
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse whitespace-nowrap">
           <thead>
@@ -90,7 +220,6 @@ const StudentList: React.FC<StudentListProps> = ({ students, onEdit, onDelete, o
               <th className="py-4 px-6 text-[10px] font-black text-navy-950 dark:text-navy-400 border-r border-slate-100 dark:border-slate-800/40 uppercase tracking-[0.2em]">Full Identification</th>
               <th className="py-4 px-6 text-[10px] font-black text-navy-950 dark:text-navy-400 border-r border-slate-100 dark:border-slate-800/40 uppercase tracking-[0.2em]">Contact & Mailing</th>
               <th className="py-4 px-6 text-[10px] font-black text-navy-950 dark:text-navy-400 border-r border-slate-100 dark:border-slate-800/40 uppercase tracking-[0.2em] text-center">Residency</th>
-              <th className="py-4 px-6 text-[10px] font-black text-navy-950 dark:text-navy-400 border-r border-slate-100 dark:border-slate-800/40 uppercase tracking-[0.2em] text-center">Govt. ID</th>
               <th className="py-4 px-6 text-[10px] font-black text-navy-950 dark:text-navy-400 border-r border-slate-100 dark:border-slate-800/40 uppercase tracking-[0.2em] text-center">Financial Status</th>
               <th className="py-4 px-6 text-[10px] font-black text-navy-950 dark:text-navy-400 uppercase tracking-[0.2em] text-right">Operations</th>
             </tr>
@@ -127,11 +256,6 @@ const StudentList: React.FC<StudentListProps> = ({ students, onEdit, onDelete, o
                   </span>
                 </td>
                 <td className="py-4 px-6 text-center border-r border-slate-100 dark:border-slate-800/40">
-                  <span className="text-xs font-mono font-bold text-slate-500 dark:text-slate-400 tracking-wider">
-                    {student.adhar_number || '–––– –––– ––––'}
-                  </span>
-                </td>
-                <td className="py-4 px-6 text-center border-r border-slate-100 dark:border-slate-800/40">
                   <div className="flex flex-col items-center gap-1">
                     <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest ${(student as any).fee_status === 'Paid' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400' : 'bg-rose-100 text-rose-700 dark:bg-rose-900/20 dark:text-rose-400'}`}>
                       {(student as any).fee_status || 'Pending'}
@@ -152,6 +276,7 @@ const StudentList: React.FC<StudentListProps> = ({ students, onEdit, onDelete, o
             ))}
           </tbody>
         </table>
+      </div>
       </div>
     </div>
   );

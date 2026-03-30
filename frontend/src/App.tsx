@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { 
-  Search, UserPlus, UserCheck, ShieldCheck, TrendingUp, 
-  Bell, Settings, User, PieChart, Sun, Moon, LogOut
+  Search, UserPlus, UserCheck, 
+  Bell, Settings, User, Sun, Moon, LogOut, BookOpen
 } from 'lucide-react';
 import StudentList from './components/StudentList';
 import StudentModal from './components/StudentModal';
@@ -12,6 +12,7 @@ import Sidebar from './components/Sidebar';
 import AcademicManagement from './components/AcademicManagement';
 import AttendanceManagement from './components/AttendanceManagement';
 import Exams from './components/Exams';
+import ChatBot from './components/ChatBot';
 import type { Student } from './types';
 
 function App() {
@@ -145,7 +146,16 @@ function App() {
   );
 
   return (
-    <div className="flex min-h-screen bg-white dark:bg-[#0c111d] text-slate-800 dark:text-slate-200 transition-colors duration-500 overflow-hidden font-sans">
+    <div className="flex min-h-screen bg-slate-50 dark:bg-[#030712] text-slate-800 dark:text-slate-200 transition-colors duration-500 overflow-hidden font-sans relative">
+      {/* Animated Background Mesh & Floating Objects */}
+      <div className="fixed inset-0 z-0 opacity-40 dark:opacity-20 pointer-events-none overflow-hidden">
+        <div className="absolute inset-0 bg-mesh scale-150" />
+        
+        {/* Floating Moving Objects */}
+        <div className="absolute top-[10%] left-[15%] w-64 h-64 glass-blob animate-float" />
+        <div className="absolute top-[60%] left-[70%] w-96 h-96 glass-blob animate-float-reverse shadow-indigo-500/10" />
+        <div className="absolute top-[40%] left-[40%] w-48 h-48 glass-blob animate-float opacity-50" />
+      </div>
       
       {/* Sidebar - Governance Navigation */}
       <Sidebar 
@@ -157,20 +167,20 @@ function App() {
       <div className="flex-1 ml-64 min-h-screen relative flex flex-col overflow-y-auto h-screen">
         
         {/* Institutional Banner / Header - Compacted */}
-        <header className="institution-banner flex items-center justify-between sticky top-0 z-[50] bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-8 py-2.5 border-b border-slate-200 dark:border-slate-800">
+        <header className="institution-banner flex items-center justify-between sticky top-0 z-[50] bg-white/70 dark:bg-slate-950/70 backdrop-blur-xl px-8 py-2.5 border-b border-slate-200 dark:border-indigo-500/20">
           <div className="flex items-center gap-4">
              <div className="w-9 h-9 bg-navy-500 rounded flex items-center justify-center text-white shadow-lg">
-                <ShieldCheck size={20} />
+                <BookOpen size={20} />
              </div>
             <div>
               <h2 className="text-lg font-black text-slate-900 dark:text-white tracking-tight uppercase leading-none">
-                {activeView === 'dashboard' ? 'Governance Dashboard' : 
+                {activeView === 'dashboard' ? 'JANAGAMANA' : 
                  activeView === 'students' ? 'Personnel Registry' :
                  activeView === 'fees' ? 'Fiscal Oversight' :
                  activeView === 'academic' ? 'Faculty Structure' :
                  activeView === 'attendance' ? 'Presence Registry' : 'Assessment Board'}
               </h2>
-              <p className="text-[8px] font-black text-slate-400 uppercase tracking-[0.3em] mt-1.5 opacity-70">Authenticated Session: Admin_V4</p>
+              <p className="text-[8px] font-black text-slate-400 uppercase tracking-[0.3em] mt-1.5 opacity-70">college admission open now</p>
             </div>
           </div>
 
@@ -252,7 +262,7 @@ function App() {
             </div>
 
             <div className="flex items-center gap-4 group cursor-pointer">
-               <div className="w-11 h-11 rounded-full border-2 border-navy-500 p-0.5 bg-white dark:bg-slate-800 relative group-hover:scale-105 transition-all">
+               <div className="w-11 h-11 rounded-full border-2 border-indigo-500 p-0.5 bg-white dark:bg-slate-800 relative group-hover:scale-105 transition-all">
                   <div className="w-full h-full rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden flex items-center justify-center text-slate-400">
                      <User size={20} />
                   </div>
@@ -270,14 +280,14 @@ function App() {
           </div>
         </header>
 
-        <div className="p-10 flex-1 overflow-y-auto">
+        <div className="p-10 flex-1 overflow-y-auto animate-fade-in-up">
           <div className="max-w-7xl mx-auto space-y-8">
 
           <main>
             {activeView === 'dashboard' ? (
               <div className="flex flex-col items-center justify-center min-h-[60vh] text-center animate-in fade-in zoom-in duration-700">
                  <div className="w-24 h-24 bg-navy-50 dark:bg-navy-500/10 rounded-3xl flex items-center justify-center text-navy-600 mb-8 border border-navy-100 dark:border-navy-500/20 shadow-xl shadow-navy-500/5">
-                    <ShieldCheck size={48} />
+                    <BookOpen size={48} />
                  </div>
                  <h3 className="text-3xl font-black text-slate-900 dark:text-white uppercase tracking-tighter mb-4">
                     Welcome, Administrator
@@ -335,6 +345,9 @@ function App() {
         onUpdate={fetchStudents}
       />
     )}
+
+    {/* AI ChatBot integration */}
+    <ChatBot />
   </div>
 );
 }

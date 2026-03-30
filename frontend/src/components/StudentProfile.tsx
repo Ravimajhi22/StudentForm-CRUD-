@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
-import { ArrowLeft, FileText, User, Mail, Calendar, Users, Globe, CreditCard, QrCode, Phone, MapPin, ShieldCheck, CheckCircle, Clock } from 'lucide-react';
-import StudentQRCard from './StudentQRCard';
+import React from 'react';
+import { ArrowLeft, FileText, User, Calendar, Users, Globe, QrCode, ShieldCheck, CheckCircle, Clock } from 'lucide-react';
 import type { Student } from '../types';
 
 interface StudentProfileProps {
@@ -9,7 +8,6 @@ interface StudentProfileProps {
 }
 
 const StudentProfile: React.FC<StudentProfileProps> = ({ student, onClose }) => {
-  const [showQR, setShowQR] = useState(false);
   
   return (
     <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -51,7 +49,6 @@ const StudentProfile: React.FC<StudentProfileProps> = ({ student, onClose }) => 
              
              <div className="flex flex-wrap gap-4 pt-4">
                 <button 
-                  onClick={() => setShowQR(true)}
                   className="flex items-center gap-2 px-6 py-3 bg-navy-950 text-white rounded-lg font-black text-[10px] uppercase tracking-[0.2em] shadow-lg shadow-navy-950/20 active:scale-95 transition-all border border-navy-800"
                 >
                   <QrCode size={16} />
@@ -103,7 +100,7 @@ const StudentProfile: React.FC<StudentProfileProps> = ({ student, onClose }) => 
                  <div className="col-span-2">
                     <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Commencement Date</p>
                     <p className="text-[13px] font-black text-slate-700 dark:text-slate-300 uppercase">
-                      {student.dob ? new Date(student.dob).toLocaleDateString('en-GB', { day: '2-digit', month: 'LONG', year: 'numeric' }) : 'PROTOCOL_MISSING'}
+                      {student.dob ? new Date(student.dob).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' }) : 'PROTOCOL_MISSING'}
                     </p>
                  </div>
               </div>
@@ -131,22 +128,18 @@ const StudentProfile: React.FC<StudentProfileProps> = ({ student, onClose }) => 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
            {/* Section: Secondary Identity */}
            <div className="p-8 bg-slate-50 dark:bg-slate-800/30 rounded-xl border border-slate-200 dark:border-slate-800">
-              <div className="flex items-center gap-3 mb-8 border-b border-slate-200 dark:border-slate-700 pb-4">
-                 <CreditCard size={18} className="text-navy-600" />
-                 <h3 className="text-[11px] font-black text-slate-900 dark:text-white uppercase tracking-[0.2em]">Institutional Credentials</h3>
-              </div>
-              <div className="grid grid-cols-2 gap-8">
-                 <div>
-                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Blood Analysis</p>
-                    <span className="px-3 py-1 bg-white border border-rose-100 text-rose-600 rounded text-[11px] font-black uppercase shadow-sm">
-                       {student.blood_group || 'UNKNOWN'}
-                    </span>
-                 </div>
-                 <div>
-                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Aadhaar UID</p>
-                    <p className="text-[14px] font-black text-slate-700 dark:text-slate-300 tracking-[0.2em]">{student.adhar_number || 'PROTOCOL_MISSING'}</p>
-                 </div>
-              </div>
+               <div className="flex items-center gap-3 mb-8 border-b border-slate-200 dark:border-slate-700 pb-4">
+                  <ShieldCheck size={18} className="text-navy-600" />
+                  <h3 className="text-[11px] font-black text-slate-900 dark:text-white uppercase tracking-[0.2em]">Institutional Credentials</h3>
+               </div>
+               <div className="grid grid-cols-1 gap-8">
+                  <div>
+                     <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Blood Analysis</p>
+                     <span className="px-3 py-1 bg-white border border-rose-100 text-rose-600 rounded text-[11px] font-black uppercase shadow-sm">
+                        {student.blood_group || 'UNKNOWN'}
+                     </span>
+                  </div>
+               </div>
            </div>
 
            {/* Section: Geolocation */}
