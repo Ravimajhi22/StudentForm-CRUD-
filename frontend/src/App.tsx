@@ -12,7 +12,6 @@ import Sidebar from './components/Sidebar';
 import AcademicManagement from './components/AcademicManagement';
 import AttendanceManagement from './components/AttendanceManagement';
 import Exams from './components/Exams';
-import Comments from './components/Comments';
 import ChatBot from './components/ChatBot';
 import type { Student } from './types';
 import { API_URL } from './apiConfig';
@@ -37,7 +36,7 @@ function App() {
     }
   }, [isDark]);
 
-  const [activeView, setActiveView] = useState<'dashboard' | 'students' | 'fees' | 'academic' | 'attendance' | 'exams' | 'comments'>('dashboard');
+  const [activeView, setActiveView] = useState<'dashboard' | 'students' | 'fees' | 'academic' | 'attendance' | 'exams'>('dashboard');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
   const [viewingStudent, setViewingStudent] = useState<Student | null>(null);
@@ -325,8 +324,6 @@ function App() {
               <AttendanceManagement />
             ) : activeView === 'exams' ? (
               <Exams />
-            ) : activeView === 'comments' ? (
-              <Comments />
             ) : (
               <StudentList
                 students={filteredStudents}
