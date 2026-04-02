@@ -1,0 +1,56 @@
+{
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "students": "Student Directory",
+    "fees": "Financial Ledger",
+    "academic": "Academic Branch",
+    "attendance": "Attendance Registry",
+    "exams": "Examination Cell",
+    "main_menu": "Main Menu",
+    "brand_name": "Education",
+    "brand_tagline": "for you",
+    "personnel": "Personnel Registry",
+    "fiscal": "Fiscal Oversight",
+    "faculty": "Faculty Structure",
+    "presence": "Presence Registry",
+    "assessment": "Assessment Board",
+    "feedback": "Neon Feedback",
+    "enroll": "Enroll",
+    "students_registry": "Active Records Registry",
+    "total_entries": "Total Synchronized Entries",
+    "export_registry": "Export Registry",
+    "download_pdf": "Download PDF",
+    "download_excel": "Download Excel"
+  },
+  "student_list": {
+    "profile": "Profile",
+    "full_identification": "Full Identification",
+    "contact_mailing": "Contact & Mailing",
+    "residency": "Residency",
+    "financial_status": "Financial Status",
+    "operations": "Operations",
+    "no_records": "No Official Records Found",
+    "no_records_msg": "The institutional database is currently empty. Please use the enrollment portal to onboard new students.",
+    "balance": "Balance"
+  },
+  "dashboard": {
+    "welcome": "Academic Operations",
+    "status": "System Status",
+    "active": "Operational",
+    "welcome_admin": "Welcome, Administrator",
+    "governance_msg": "Institutional governance is currently at optimal levels. Select a module from the navigation to begin oversight operations.",
+    "personnel_label": "Personnel",
+    "attendance_label": "Attendance"
+  },
+  "common": {
+    "language": "Language",
+    "english": "English",
+    "hindi": "Hindi",
+    "telugu": "Telugu",
+    "urdu": "Urdu",
+    "tamil": "Tamil",
+    "malayalam": "Malayalam",
+    "kannada": "Kannada",
+    "odia": "Odia"
+  }
+}

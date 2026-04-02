@@ -87,22 +87,28 @@ const initDb = async () => {
       );
     `);
 
-    // 7. Exams Table
+    // 8. Admins Table
     await pool.query(`
-      CREATE TABLE IF NOT EXISTS exams (
+      CREATE TABLE IF NOT EXISTS admins (
         id SERIAL PRIMARY KEY,
-        exam_name VARCHAR(100) NOT NULL,
-        course_id INTEGER REFERENCES courses(id) ON DELETE CASCADE,
-        exam_date DATE NOT NULL,
-        start_time TIME NOT NULL,
-        end_time TIME NOT NULL,
-        room_number VARCHAR(20),
-        total_marks INTEGER DEFAULT 100,
-        description TEXT
+        email VARCHAR(100) UNIQUE NOT NULL,
+        password TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
 
     console.log("All tables created successfully!");
+
+    // 9. Default Admin Seed
+    const adminCheck = await pool.query("SELECT COUNT(*) FROM admins");
+    if (parseInt(adminCheck.rows[0].count) === 0) {
+      console.log("Seeding initial admin access...");
+      // Plain text password for seed, will be hashed in Controller during login check or properly seed here
+      const bcrypt = require('bcryptjs');
+      const hashedPassword = await bcrypt.hash('admin123', 10);
+      await pool.query("INSERT INTO admins (email, password) VALUES ($1, $2)", ['admin@education.com', hashedPassword]);
+      console.log("Default Admin access established: admin@education.com / admin123");
+    }
 
     // Optional: Seed initial data if tables are empty
     const branchCheck = await pool.query("SELECT COUNT(*) FROM branches");

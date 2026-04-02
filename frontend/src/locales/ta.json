@@ -1,0 +1,56 @@
+{
+  "sidebar": {
+    "dashboard": "டாஷ்போர்டு",
+    "students": "மாணவர் அடைவு",
+    "fees": "நிதி லெட்జర్",
+    "academic": "கல்விப் பிரிவு",
+    "attendance": "வருகைப் பதிவு",
+    "exams": "தேர்வுப் பிரிவு",
+    "main_menu": "முதன்மை மெனு",
+    "brand_name": "கல்வி",
+    "brand_tagline": "உங்களுக்காக",
+    "personnel": "பணியாளர் பதிவு",
+    "fiscal": "நிதி மேற்பார்வை",
+    "faculty": "பீட அமைப்பு",
+    "presence": "வருகைப் பதிவு",
+    "assessment": "மதிப்பீட்டு வாரியம்",
+    "feedback": "கருத்து",
+    "enroll": "சேர்க்கை",
+    "students_registry": "செயலில் உள்ள பதிவுகள்",
+    "total_entries": "மொத்த பதிவுகள்",
+    "export_registry": "பதிவேட்டை ஏற்றுமதி செய்",
+    "download_pdf": "PDF பதிவிறக்கம்",
+    "download_excel": "Excel பதிவிறக்கம்"
+  },
+  "student_list": {
+    "profile": "சுயவிவரம்",
+    "full_identification": "முழு அடையாளம்",
+    "contact_mailing": "தொடர்பு மற்றும் அஞ்சல்",
+    "residency": "குடியிருப்பு",
+    "financial_status": "நிதி நிலை",
+    "operations": "செயல்பாடுகள்",
+    "no_records": "பதிவுகள் எதுவும் இல்லை",
+    "no_records_msg": "தரவுத்தளம் காலியாக உள்ளது. புதிய மாணவர்களை சேர்க்க சேர்க்கை போர்ட்டலைப் பயன்படுத்தவும்.",
+    "balance": "மீதி"
+  },
+  "dashboard": {
+    "welcome": "கல்விச் செயல்பாடுகள்",
+    "status": "கணினி நிலை",
+    "active": "செயலில் உள்ளது",
+    "welcome_admin": "நிர்வாகிக்கு வரவேற்பு",
+    "governance_msg": "மேற்பார்வையைத் தொடங்க மெனுவிலிருந்து ஒரு தொகுதியைத் தேர்ந்தெடுக்கவும்.",
+    "personnel_label": "பணியாளர்கள்",
+    "attendance_label": "வருகை"
+  },
+  "common": {
+    "language": "மொழி",
+    "english": "ஆங்கிலம்",
+    "hindi": "இந்தி",
+    "telugu": "தெலுங்கு",
+    "urdu": "உருது",
+    "tamil": "தமிழ்",
+    "malayalam": "மலையாளம்",
+    "kannada": "கன்னடம்",
+    "odia": "ஒடியா"
+  }
+}

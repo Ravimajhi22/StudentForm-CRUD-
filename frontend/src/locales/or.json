@@ -1,0 +1,56 @@
+{
+  "sidebar": {
+    "dashboard": "ଡ୍ୟାସବୋର୍ଡ",
+    "students": "ଛାତ୍ର ନିର୍ଦ୍ଦେଶିକା",
+    "fees": "ଆର୍ଥିକ ଲେଜର",
+    "academic": "ଏକାଡେମିକ୍ ଶାଖା",
+    "attendance": "ଉପସ୍ଥାନ ରେଜିଷ୍ଟ୍ରି",
+    "exams": "ପରୀକ୍ଷା ସେଲ୍",
+    "main_menu": "ମୁଖ୍ୟ ମେନୁ",
+    "brand_name": "ଶିକ୍ଷା",
+    "brand_tagline": "ଆପଣଙ୍କ ପାଇଁ",
+    "personnel": "କର୍ମଚାରୀ ରେଜିଷ୍ଟ୍ରି",
+    "fiscal": "ଆର୍ଥିକ ତଦାରଖ",
+    "faculty": "ଫାକଲ୍ଟି ସଂରଚନା",
+    "presence": "ଉପସ୍ଥାନ ରେଜିଷ୍ଟ୍ରି",
+    "assessment": "ମୂଲ୍ୟାୟନ ବୋର୍ଡ",
+    "feedback": "ମତାମତ",
+    "enroll": "ନାମଲେଖା",
+    "students_registry": "ସକ୍ରିୟ ରେକର୍ଡ ରେଜିଷ୍ଟ୍ରି",
+    "total_entries": "ମୋଟ ପ୍ରବିଷ୍ଟି",
+    "export_registry": "ରେଜିଷ୍ଟ୍ରି ରପ୍ତାନି କରନ୍ତୁ",
+    "download_pdf": "PDF ଡାଉନଲୋଡ୍",
+    "download_excel": "Excel ଡାଉନଲୋଡ୍"
+  },
+  "student_list": {
+    "profile": "ପ୍ରୋଫାଇଲ୍",
+    "full_identification": "ପୂର୍ଣ୍ଣ ପରିଚୟ",
+    "contact_mailing": "ଯୋଗାଯୋଗ ଏବଂ ମେଲିଂ",
+    "residency": "ନିବାସ",
+    "financial_status": "ଆର୍ଥିକ ସ୍ଥିତି",
+    "operations": "କାର୍ଯ୍ୟକଳାପ",
+    "no_records": "କୌଣସି ରେକର୍ଡ ମିଳିଲା ନାହିଁ",
+    "no_records_msg": "ଡାଟାବେସ୍ ଖାଲି ଅଛି। ନୂତନ ଛାତ୍ରଛାତ୍ରୀଙ୍କୁ ଯୋଡିବା ପାଇଁ ନାମଲେଖା ପୋର୍ଟାଲ୍ ବ୍ୟବହାର କରନ୍ତు ।",
+    "balance": "ବାକି ଅର୍ଥ"
+  },
+  "dashboard": {
+    "welcome": "ଏକାଡେମିକ୍ କାର୍ଯ୍ୟକଳାପ",
+    "status": "ସିଷ୍ଟମ୍ ସ୍ଥିତି",
+    "active": "ସକ୍ରିୟ ଅଛି",
+    "welcome_admin": "ସ୍ୱାଗତ, ପ୍ରଶାସକ",
+    "governance_msg": "ତଦାରଖ ଆରମ୍ଭ କରିବାକୁ ମେନୁରୁ ଏକ ମଡ୍ୟୁଲ୍ ଚୟନ କରନ୍ତు ।",
+    "personnel_label": "କର୍ମଚାରୀ",
+    "attendance_label": "ଉପସ୍ଥାନ"
+  },
+  "common": {
+    "language": "ଭାଷା",
+    "english": "ଇଂରାଜୀ",
+    "hindi": "ହିନ୍ଦୀ",
+    "telugu": "ତେଲୁଗୁ",
+    "urdu": "ଉର୍ଦ୍ଦୁ",
+    "tamil": "ତାମିଲ",
+    "malayalam": "ମାଲାୟାଲମ୍",
+    "kannada": "କନ୍ନଡ",
+    "odia": "ଓଡ଼ିଆ"
+  }
+}

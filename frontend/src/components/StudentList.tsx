@@ -3,6 +3,7 @@ import { Edit2, Trash2, Users, Printer, FileText, Eye, DollarSign, Download, Fil
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
+import { useTranslation } from 'react-i18next';
 import type { Student } from '../types';
 
 interface StudentListProps {
@@ -14,6 +15,7 @@ interface StudentListProps {
 }
 
 const StudentList: React.FC<StudentListProps> = ({ students, onEdit, onDelete, onView, onManageFees }) => {
+  const { t } = useTranslation();
   const [isExportOpen, setIsExportOpen] = useState(false);
 
   const exportToPDF = () => {
@@ -106,8 +108,8 @@ const StudentList: React.FC<StudentListProps> = ({ students, onEdit, onDelete, o
             <Users size={36} strokeWidth={1.5} />
           </div>
         </div>
-        <h3 className="text-xl font-black text-slate-800 dark:text-slate-100 mb-2 tracking-tight">No Official Records Found</h3>
-        <p className="text-sm font-bold text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed">The institutional database is currently empty. Please use the enrollment portal to onboard new students.</p>
+        <h3 className="text-xl font-black text-slate-800 dark:text-slate-100 mb-2 tracking-tight">{t('student_list.no_records')}</h3>
+        <p className="text-sm font-bold text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed">{t('student_list.no_records_msg')}</p>
       </div>
     );
   }
@@ -172,9 +174,9 @@ const StudentList: React.FC<StudentListProps> = ({ students, onEdit, onDelete, o
         <div>
           <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest flex items-center gap-2">
             <Users size={16} className="text-navy-600" />
-            Active Records Registry
+            {t('sidebar.students_registry')}
           </h3>
-          <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter mt-0.5">Total Synchronized Entries: {students.length}</p>
+          <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter mt-0.5">{t('sidebar.total_entries')}: {students.length}</p>
         </div>
 
         <div className="relative">
@@ -183,7 +185,7 @@ const StudentList: React.FC<StudentListProps> = ({ students, onEdit, onDelete, o
             className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-[10px] font-black text-slate-700 dark:text-slate-300 uppercase tracking-widest hover:border-navy-500 transition-all shadow-sm group"
           >
             <Download size={12} className="group-hover:translate-y-0.5 transition-transform" />
-            <span>Export Registry</span>
+            <span>{t('sidebar.export_registry')}</span>
             <ChevronDown size={10} className={`transition-transform duration-300 ${isExportOpen ? 'rotate-180' : ''}`} />
           </button>
 
@@ -196,14 +198,14 @@ const StudentList: React.FC<StudentListProps> = ({ students, onEdit, onDelete, o
                   className="w-full flex items-center gap-3 px-4 py-2.5 text-[10px] font-black text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-navy-600 uppercase tracking-widest transition-colors"
                 >
                   <FilePdf size={14} className="text-rose-500" />
-                  Download PDF
+                  {t('sidebar.download_pdf')}
                 </button>
                 <button 
                   onClick={exportToExcel}
                   className="w-full flex items-center gap-3 px-4 py-2.5 text-[10px] font-black text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-emerald-600 uppercase tracking-widest transition-colors"
                 >
                   <FileExcel size={14} className="text-emerald-500" />
-                  Download Excel
+                  {t('sidebar.download_excel')}
                 </button>
               </div>
             </>
@@ -216,12 +218,12 @@ const StudentList: React.FC<StudentListProps> = ({ students, onEdit, onDelete, o
         <table className="w-full text-left border-collapse whitespace-nowrap">
           <thead>
             <tr className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800">
-              <th className="py-4 px-6 text-[10px] font-black text-navy-950 dark:text-navy-400 border-r border-slate-100 dark:border-slate-800/40 uppercase tracking-[0.2em] w-16">Profile</th>
-              <th className="py-4 px-6 text-[10px] font-black text-navy-950 dark:text-navy-400 border-r border-slate-100 dark:border-slate-800/40 uppercase tracking-[0.2em]">Full Identification</th>
-              <th className="py-4 px-6 text-[10px] font-black text-navy-950 dark:text-navy-400 border-r border-slate-100 dark:border-slate-800/40 uppercase tracking-[0.2em]">Contact & Mailing</th>
-              <th className="py-4 px-6 text-[10px] font-black text-navy-950 dark:text-navy-400 border-r border-slate-100 dark:border-slate-800/40 uppercase tracking-[0.2em] text-center">Residency</th>
-              <th className="py-4 px-6 text-[10px] font-black text-navy-950 dark:text-navy-400 border-r border-slate-100 dark:border-slate-800/40 uppercase tracking-[0.2em] text-center">Financial Status</th>
-              <th className="py-4 px-6 text-[10px] font-black text-navy-950 dark:text-navy-400 uppercase tracking-[0.2em] text-right">Operations</th>
+              <th className="py-4 px-6 text-[10px] font-black text-navy-950 dark:text-navy-400 border-r border-slate-100 dark:border-slate-800/40 uppercase tracking-[0.2em] w-16">{t('student_list.profile')}</th>
+              <th className="py-4 px-6 text-[10px] font-black text-navy-950 dark:text-navy-400 border-r border-slate-100 dark:border-slate-800/40 uppercase tracking-[0.2em]">{t('student_list.full_identification')}</th>
+              <th className="py-4 px-6 text-[10px] font-black text-navy-950 dark:text-navy-400 border-r border-slate-100 dark:border-slate-800/40 uppercase tracking-[0.2em]">{t('student_list.contact_mailing')}</th>
+              <th className="py-4 px-6 text-[10px] font-black text-navy-950 dark:text-navy-400 border-r border-slate-100 dark:border-slate-800/40 uppercase tracking-[0.2em] text-center">{t('student_list.residency')}</th>
+              <th className="py-4 px-6 text-[10px] font-black text-navy-950 dark:text-navy-400 border-r border-slate-100 dark:border-slate-800/40 uppercase tracking-[0.2em] text-center">{t('student_list.financial_status')}</th>
+              <th className="py-4 px-6 text-[10px] font-black text-navy-950 dark:text-navy-400 uppercase tracking-[0.2em] text-right">{t('student_list.operations')}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -260,7 +262,7 @@ const StudentList: React.FC<StudentListProps> = ({ students, onEdit, onDelete, o
                     <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest ${(student as any).fee_status === 'Paid' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400' : 'bg-rose-100 text-rose-700 dark:bg-rose-900/20 dark:text-rose-400'}`}>
                       {(student as any).fee_status || 'Pending'}
                     </span>
-                    <span className="text-[9px] font-bold text-slate-400">Balance: ₹{(student as any).fee_balance || 0}</span>
+                    <span className="text-[9px] font-bold text-slate-400">{t('student_list.balance')}: ₹{(student as any).fee_balance || 0}</span>
                   </div>
                 </td>
                 <td className="py-4 px-6 text-right">

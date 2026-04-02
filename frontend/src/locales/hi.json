@@ -1,0 +1,56 @@
+{
+  "sidebar": {
+    "dashboard": "डैशबोर्ड",
+    "students": "छात्र निर्देशिका",
+    "fees": "वित्तीय खाता",
+    "academic": "शैक्षणिक शाखा",
+    "attendance": "उपस्थिति रजिस्टर",
+    "exams": "परीक्षा सेल",
+    "main_menu": "मुख्य मेनू",
+    "brand_name": "शिक्षा",
+    "brand_tagline": "आपके लिए",
+    "personnel": "कार्मिक रजिस्ट्री",
+    "fiscal": "राजकोषीय निरीक्षण",
+    "faculty": "संकाय संरचना",
+    "presence": "उपस्थिति रजिस्ट्री",
+    "assessment": "मूल्यांकन बोर्ड",
+    "feedback": "सुझाव",
+    "enroll": "नामांकन",
+    "students_registry": "सक्रिय रिकॉर्ड रजिस्ट्री",
+    "total_entries": "कुल सिंक्रनाइज़ प्रविष्टियाँ",
+    "export_registry": "रजिस्ट्री निर्यात करें",
+    "download_pdf": "पीडीएफ डाउनलोड करें",
+    "download_excel": "एक्सेल डाउनलोड करें"
+  },
+  "student_list": {
+    "profile": "प्रोफ़ाइल",
+    "full_identification": "पूर्ण पहचान",
+    "contact_mailing": "संपर्क और मेलिंग",
+    "residency": "निवास",
+    "financial_status": "वित्तीय स्थिति",
+    "operations": "संचालन",
+    "no_records": "कोई आधिकारिक रिकॉर्ड नहीं मिला",
+    "no_records_msg": "संस्थागत डेटाबेस वर्तमान में खाली है। कृपया नए छात्रों को जोड़ने के लिए नामांकन पोर्टल का उपयोग करें।",
+    "balance": "शेष राशि"
+  },
+  "dashboard": {
+    "welcome": "शैक्षणिक संचालन",
+    "status": "सिस्टम स्थिति",
+    "active": "क्रियाशील",
+    "welcome_admin": "स्वागत है, प्रशासक",
+    "governance_msg": "संस्थागत शासन वर्तमान में इष्टतम स्तर पर है। निरीक्षण संचालन शुरू करने के लिए नेविगेशन से एक मॉड्यूल चुनें।",
+    "personnel_label": "कार्मिक",
+    "attendance_label": "उपस्थिति"
+  },
+  "common": {
+    "language": "भाषा",
+    "english": "अंग्रेजी",
+    "hindi": "हिंदी",
+    "telugu": "తెలుగు (తెలుగు)",
+    "urdu": "اردو (Urdu)",
+    "tamil": "தமிழ் (Tamil)",
+    "malayalam": "മലയാളം (Malayalam)",
+    "kannada": "ಕನ್ನಡ (Kannada)",
+    "odia": "ଓଡ଼ିଆ (Odia)"
+  }
+}

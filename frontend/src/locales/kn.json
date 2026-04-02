@@ -1,0 +1,56 @@
+{
+  "sidebar": {
+    "dashboard": "ಡ್ಯಾಶ್‌ಬೋರ್ಡ್",
+    "students": "ವಿದ್ಯಾರ್ಥಿಗಳ ಡೈರೆಕ್ಟರಿ",
+    "fees": "ಹಣಕಾಸು ಲೆಡ್ಜರ್",
+    "academic": "ಶೈಕ್ಷಣಿಕ ಶಾಖೆ",
+    "attendance": "ಹಾಜರಾತಿ ನೋಂದಣಿ",
+    "exams": "ಪರೀಕ್ಷಾ ಕೊಠಡಿ",
+    "main_menu": "ಮುಖ್ಯ ಮೆನು",
+    "brand_name": "ಶಿಕ್ಷಣ",
+    "brand_tagline": "ನಿಮಗಾಗಿ",
+    "personnel": "ಸಿಬ್ಬಂದಿ ನೋಂದಣಿ",
+    "fiscal": "ಹಣಕಾಸು ಮೇಲ್ವಿಚಾರಣೆ",
+    "faculty": "ಫ್ಯಾಕಲ್ಟಿ ರಚನೆ",
+    "presence": "ಹಾಜರಾತಿ ನೋಂದಣಿ",
+    "assessment": "ಮೌಲ್ಯಮಾಪನ ಮಂಡಳಿ",
+    "feedback": "ಅಭಿಪ್ರాయ",
+    "enroll": "ದಾಖಲಾತಿ",
+    "students_registry": "ಸಕ್ರಿಯ ದಾಖಲೆಗಳ ನೋಂದಣಿ",
+    "total_entries": "ಒಟ್ಟು ನಮೂದುಗಳು",
+    "export_registry": "ನೋಂದಣಿ ರಫ್ತು ಮಾಡಿ",
+    "download_pdf": "PDF ಡೌನ್‌ಲೋಡ್",
+    "download_excel": "Excel ಡೌನ್‌ಲೋಡ್"
+  },
+  "student_list": {
+    "profile": "ಪ್ರೊಫೈಲ್",
+    "full_identification": "ಪೂರ್ಣ ಗುರುತು",
+    "contact_mailing": "ಸಂಪರ್ಕ ಮಾಹಿತಿ",
+    "residency": "ನಿವಾಸ",
+    "financial_status": "ಹಣಕಾಸು ಸ್ಥಿತಿ",
+    "operations": "ಕಾರ್ಯಾಚರಣೆಗಳು",
+    "no_records": "ದಾಖಲೆಗಳು ಕಂಡುಬಂದಿಲ್ಲ",
+    "no_records_msg": "ಡೇಟಾಬೇಸ್ ಪ್ರಸ್ತುತ ಖಾಲಿಯಾಗಿದೆ. ಹೊಸ ವಿದ್ಯಾರ್ಥಿಗಳನ್ನು ಸೇರಿಸಲು ದಾಖಲಾತಿ ಪೋರ್ಟಲ್ ಬಳಸಿ.",
+    "balance": "ಬಾಕಿ ಮೊತ್ತ"
+  },
+  "dashboard": {
+    "welcome": "ಶೈಕ್ಷಣಿಕ ಕಾರ್ಯಾಚರಣೆಗಳು",
+    "status": "ವ್ಯವಸ್ಥೆಯ ಸ್ಥಿತಿ",
+    "active": "ಸಕ್ರಿಯವಾಗಿದೆ",
+    "welcome_admin": "ಸ್ವಾಗತ, ನಿರ್ವಾಹಕರೆ",
+    "governance_msg": "ಮೇಲ್ವಿಚಾರಣೆಯನ್ನು ಪ್ರಾರಂಭಿಸಲು ಮೆನುವಿನಿಂದ ಮಾಡ್ಯೂಲ್ ಆಯ್ಕೆಮಾಡಿ.",
+    "personnel_label": "ಸಿಬ್ಬಂದಿ",
+    "attendance_label": "ಹಾಜರಾತಿ"
+  },
+  "common": {
+    "language": "ಭಾಷೆ",
+    "english": "ಆಂಗ್ಲ",
+    "hindi": "ಹಿಂದಿ",
+    "telugu": "ತೆಲುಗು",
+    "urdu": "ಉರ್ದು",
+    "tamil": "ತಮಿಳು",
+    "malayalam": "ಮಲಯಾಳಂ",
+    "kannada": "ಕನ್ನಡ",
+    "odia": "ಒಡಿಯಾ"
+  }
+}

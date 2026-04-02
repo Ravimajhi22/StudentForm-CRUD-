@@ -1,0 +1,56 @@
+{
+  "sidebar": {
+    "dashboard": "ڈیش بورڈ",
+    "students": "طلباء کی ڈائرکٹری",
+    "fees": "مالیاتی لیجر",
+    "academic": "اکیڈمک برانچ",
+    "attendance": "حاضری رجسٹری",
+    "exams": "امتحانی سیل",
+    "main_menu": "مین مینو",
+    "brand_name": "تعلیم",
+    "brand_tagline": "آپ کے لیے",
+    "personnel": "اہلکاروں کی رجسٹری",
+    "fiscal": "مالیاتی نگرانی",
+    "faculty": "فیکلٹی ڈھانچہ",
+    "presence": "حاضری رجسٹری",
+    "assessment": "اسسمنٹ بورڈ",
+    "feedback": "رائے",
+    "enroll": "اندراج",
+    "students_registry": "فعال ریکارڈز رجسٹری",
+    "total_entries": "کل مطابقت پذیر اندراجات",
+    "export_registry": "رجسٹری ایکسپورٹ کریں",
+    "download_pdf": "PDF ڈاؤن لوڈ کریں",
+    "download_excel": "Excel ڈاؤن لوڈ کریں"
+  },
+  "student_list": {
+    "profile": "پروفائل",
+    "full_identification": "مکمل شناخت",
+    "contact_mailing": "رابطہ اور میلنگ",
+    "residency": "رہائش",
+    "financial_status": "مالی حیثیت",
+    "operations": "آپریشنز",
+    "no_records": "کوئی سرکاری ریکارڈ نہیں ملا",
+    "no_records_msg": "ادارہ جاتی ڈیٹا بیس فی الحال خالی ہے۔ براہ کرم نئے طلباء کو شامل کرنے کے لیے اندراج پورٹل استعمال کریں۔",
+    "balance": "باقی رقم"
+  },
+  "dashboard": {
+    "welcome": "تعلیمی آپریشنز",
+    "status": "سسٹم کی حیثیت",
+    "active": "فعال",
+    "welcome_admin": "خوش آمدید، منتظم",
+    "governance_msg": "ادارہ جاتی گورننس فی الحال بہترین سطح پر ہے۔ نگرانی شروع کرنے کے لیے مینو سے ایک ماڈیول منتخب کریں۔",
+    "personnel_label": "اہلکار",
+    "attendance_label": "حاضری"
+  },
+  "common": {
+    "language": "زبان",
+    "english": "انگریزی",
+    "hindi": "ہندی",
+    "telugu": "تلگو",
+    "urdu": "اردو",
+    "tamil": "تمل",
+    "malayalam": "ملیالم",
+    "kannada": "کنڑ",
+    "odia": "اوڑیا"
+  }
+}
